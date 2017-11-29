@@ -3,6 +3,7 @@
 typedef struct {
     int pid;
     unsigned int page_index;
+	unsigned int value;
     int vazio;
 }PageFrame;
 

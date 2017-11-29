@@ -39,7 +39,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
         memID = 2222;
     else if(program_pid == Px[2])
         memID = 3333;
-    else
+    else if(program_pid == Px[3])
         memID = 4444;
     
 //    printf("Program %d is executing trans\n", memID);
