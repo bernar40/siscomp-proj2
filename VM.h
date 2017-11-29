@@ -4,7 +4,7 @@ typedef struct {
     int pid;
     unsigned int page_index;
 	unsigned int value;
-    int vazio;
+	unsigned int vazio;
 	unsigned int b_written;
 }PageFrame;
 

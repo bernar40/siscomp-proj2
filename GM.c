@@ -14,7 +14,8 @@
 #include "VM.h"
 #define EVER ; ;
 #define IPCMNI 262144
-
+void sleep1sec(int signal);
+void sleep2sec(int signal);
 void pageFault(int signal);
 PageFrame **mem_fisica;
 PageTable *PageTablep1;
@@ -127,7 +128,9 @@ int main(void) {
                 }
                 else{
                     // ###########    Processo P4 --- Filho 4     ###########
-                    FILE *fp4 = fopen("compilador.log", "r");
+					//signal(SIGUSR1, sleep1sec);					
+					//signal(SIGUSR2, sleep2sec);                   
+					FILE *fp4 = fopen("compilador.log", "r");
                     int pidP4 = getpid();
                     while(fscanf(fp4, "%x %c", &addr, &rw)){
                         i = addr >> 24;
@@ -140,7 +143,9 @@ int main(void) {
             }
             else{
                 // ###########    Processo P3 --- Filho 3     ###########
-                FILE *fp3 = fopen("compressor.log", "r");
+				//signal(SIGUSR1, sleep1sec);				
+				//signal(SIGUSR2, sleep2sec);                
+				FILE *fp3 = fopen("compressor.log", "r");
                 int pidP3 = getpid();
                 while(fscanf(fp3, "%x %c", &addr, &rw)){
                     i = addr >> 24;
@@ -153,7 +158,9 @@ int main(void) {
         }
         else{
             // ###########    Processo P2 --- Filho 2     ###########
-            FILE *fp2 = fopen("matriz.log", "r");
+			//signal(SIGUSR1, sleep1sec);			
+			//signal(SIGUSR2, sleep2sec);            
+			FILE *fp2 = fopen("matriz.log", "r");
             int pidP2 = getpid();
             while(fscanf(fp2, "%x %c", &addr, &rw)){
                 i = addr >> 24;
@@ -166,7 +173,9 @@ int main(void) {
     }
     else{
         // ###########    Processo P1 --- Filho 1     ###########
-        FILE *fp1 = fopen("simulador.log", "r");
+		//signal(SIGUSR1, sleep1sec);		
+		//signal(SIGUSR2, sleep2sec);        
+		FILE *fp1 = fopen("simulador.log", "r");
         int pidP1 = getpid();
         while(fscanf(fp1, "%x %c", &addr, &rw)){
             i = addr >> 24;
@@ -179,10 +188,35 @@ int main(void) {
     return 0;
 }
 
-
-void pageFault(int signal){
-	
-
+void sleep1sec(int signal){
+	sleep(1);
+}
+void sleep2sec(int signal){
+	sleep(2);
+}
+void pageFault(int signal){//#EDITING
+	PageFrame *min = deleteNode(&frameHeap);
+	int sleep_time;	//Quanto o processo que deu page fault deverá dormir
+	//kill(,SIGSTOP) <--que pid deu pageFault?
+	//Caso a página eleita tenha sido modificada
+	if (min->vazio){
+		sleep_time = 1;
+		//Inserir no frame
+		min->vazio = 0;
+	}
+	else{
+		if(min->b_written){
+			sleep_time = 2;
+		}
+		else{
+			sleep_time = 1;
+		}
+		//Trocar o conteúdo do frame
+		min->value = 0;
+		min->vazio = 0;
+		//Atualizar tabela do processo que perdeu
+	}
+	//Atualizar tabela do processo que ganhou
 
 
 }
