@@ -49,8 +49,10 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
     pt = (PageTable *) shmat(segPT, 0, 0);
     
 //  Virtual -> Physical
-    frameNumber = page_index;
-    physicaladdr = frameNumber + offset;
+	//frameNumber = page_index;
+	/*Traduzir page_index pra frame_number*/
+	frameNumber = pt[frame_number];
+    physicaladdr = frameNumber<<24 + offset;
     
 //  Add to page table
     while(i<64){

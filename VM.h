@@ -5,6 +5,7 @@ typedef struct {
     unsigned int page_index;
 	unsigned int value;
     int vazio;
+	unsigned int b_written;
 }PageFrame;
 
 typedef struct {

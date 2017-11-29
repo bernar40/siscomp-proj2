@@ -15,6 +15,13 @@
 #define EVER ; ;
 #define IPCMNI 262144
 
+void pageFault(int signal);
+PageFrame **mem_fisica;
+PageTable *PageTablep1;
+PageTable *PageTablep2;
+PageTable *PageTablep3;
+PageTable *PageTablep4;
+minHeap frameHeap;
 int main(void) {
     int P1, P2, P3, P4;
     unsigned int i, o;
@@ -33,11 +40,6 @@ int main(void) {
                     int segP1, segP2, segP3, segP4, segPx;
                     int *Px;
                     int k = 0;
-                    PageTable *PageTablep1;
-                    PageTable *PageTablep2;
-                    PageTable *PageTablep3;
-                    PageTable *PageTablep4;
-                    PageFrame *mem_fisica;
 
                     if ((segP1 = shmget(1111, 64*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P1");
@@ -65,7 +67,7 @@ int main(void) {
                     PageTablep3 = (PageTable *) shmat(segP3, 0, 0);
                     PageTablep4 = (PageTable *) shmat(segP4, 0, 0);
                     Px = (int *) shmat(segPx, 0, 0);
-                    mem_fisica = (PageFrame *) malloc(256*sizeof(PageFrame));
+                    mem_fisica = (PageFrame **) malloc(256*sizeof(PageFrame*));
                     
                     if (PageTablep1 == (PageTable *)(-1)) {
                         perror("shmat P1");
@@ -91,14 +93,21 @@ int main(void) {
 
 
                     while(k<256){
-                        mem_fisica[k].vazio = 0;
+						mem_fisica[k] = (PageFrame*)malloc(sizeof(PageFrame));
+                        mem_fisica[k]->vazio = 0;
+                        mem_fisica[k]->value = 0;
                         PageTablep1[k].vazio = 0;
                         PageTablep2[k].vazio = 0;
                         PageTablep3[k].vazio = 0;
                         PageTablep4[k].vazio = 0;
                         k++;
                     }
-                    
+					//Constroi Heap de minimos para os frames
+					frameHeap = initMinHeap();
+					buildMinHeap(frameHeap,mem_fisica,256);
+					
+                    signal( SIGUSR1, pageFault);
+					
                     for(EVER){
                         printf("GM executando...\n");
                         sleep(1);
@@ -168,4 +177,12 @@ int main(void) {
 
     }
     return 0;
+}
+
+
+void pageFault(int signal){
+	
+
+
+
 }

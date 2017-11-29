@@ -107,7 +107,7 @@ void insertNode(minHeap *hp, PageFrame *data) {
     nd.data = data ;
 
     int i = (hp->size)++ ;
-    while(i && nd.data < hp->elem[PARENT(i)].data) {
+    while(i && nd.data->value < hp->elem[PARENT(i)].data->value) {
         hp->elem[i] = hp->elem[PARENT(i)] ;
         i = PARENT(i) ;
     }
