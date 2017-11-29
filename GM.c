@@ -12,7 +12,8 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include "VM.h"
-#define EVER ; ;
+#define EVER ;;
+#define DEBUG 1
 #define IPCMNI 262144
 void sleep1sec(int signal);
 void sleep2sec(int signal);
@@ -38,8 +39,8 @@ int main(void) {
                 P4 = fork();
                 if(P4){
                     // ###########    Processo GM --- Pai     ###########
-                    int segP1, segP2, segP3, segP4, segPx;
-                    int *Px;
+                    int segP1, segP2, segP3, segP4, segPx, segPfault;
+					        int *Px;
                     int k = 0;
 
                     if ((segP1 = shmget(1111, 64*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
@@ -194,27 +195,69 @@ void sleep1sec(int signal){
 void sleep2sec(int signal){
 	sleep(2);
 }
-void pageFault(int signal){//#EDITING
+void pageFault(int signal){//#EDITING	
+	if(DEBUG)
+		printf("\nSIGUSR1 received by %d: Entered pageFault",getpid());
+
+	//Shmem para pegar as informações do processo que teve pagefault
+	int segPfault;
 	PageFrame *min = deleteNode(&frameHeap);
 	int sleep_time;	//Quanto o processo que deu page fault deverá dormir
-	//kill(,SIGSTOP) <--que pid deu pageFault?
-	//Caso a página eleita tenha sido modificada
-	if (min->vazio){
+	PageTable *pFault;
+
+
+	if ((segPx = shmget(9999, sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+		perror("shmget Pfault");
+		exit(1);
+	}
+	pFault = (PageTable *) shmat(segPfault, 0, 0);
+	if (pFault == (PageTable *)(-1)) {
+		perror("shmat Pfault");
+		exit(1);
+	}
+
+	kill(pFault->pid,SIGSTOP);
+	//Caso haja um frame vazio
+	if(min->vazio){
+		if(DEBUG)
+			printf("\n\tmin is empty");
 		sleep_time = 1;
-		//Inserir no frame
-		min->vazio = 0;
 	}
 	else{
+		if(DEBUG)
+			printf("\n\tmin is not empty");
+		//Caso a página eleita tenha sido modificada
 		if(min->b_written){
+			if(DEBUG)
+				printf("\n\t\tmin is written");
 			sleep_time = 2;
+			//Atualizar tabela do processo que perdeu(min->pid)
 		}
 		else{
+			if(DEBUG)
+				printf("\n\t\tmin is not written");
 			sleep_time = 1;
 		}
-		//Trocar o conteúdo do frame
-		min->value = 0;
-		min->vazio = 0;
-		//Atualizar tabela do processo que perdeu
+	}
+	//Inserir no frame
+	min->page_index = pFault->page_index;
+	min->value = 1;
+	min->vazio = 0;
+	min->b_written = (pFault->rw == "W" || pFault->rw == "w")?1:0;
+	min->pid = pFault->pid;
+	if(DEBUG){
+		printf("\n\t\t\tpFault:");
+		printf("\n\t\t\t\tpage_index = %d",pFault->page_index);
+		printf("\n\t\t\t\tvalue = %d",pFault->value);
+		printf("\n\t\t\t\tvazio = %d",pFault->vazio);
+		printf("\n\t\t\t\tb_written = %d",pFault->b_written);
+		printf("\n\t\t\t\tpid = %d",pFault->pid);
+		printf("\n\t\t\tFrame:");
+		printf("\n\t\t\t\tpage_index = %d",min->page_index);
+		printf("\n\t\t\t\tvalue = %d",min->value);
+		printf("\n\t\t\t\tvazio = %d",min->vazio);
+		printf("\n\t\t\t\tb_written = %d",min->b_written);
+		printf("\n\t\t\t\tpid = %d",min->pid);
 	}
 	//Atualizar tabela do processo que ganhou
 

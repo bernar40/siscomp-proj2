@@ -9,6 +9,7 @@ typedef struct {
 }PageFrame;
 
 typedef struct {
+    int pid;
     unsigned int page_index;
     int frameNum;
     char rw;

@@ -52,9 +52,30 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	//frameNumber = page_index;
 	/*Traduzir page_index pra frame_number*/
 	frameNumber = pt[frame_number];
-    physicaladdr = frameNumber<<24 + offset;
+	physicaladdr = frameNumber<<24 + offset;
+    
+    
+    
+    /*Se der pageFault, essa é a memória compartilhada a ser criada
+	int segPfault;
+    if ((segPx = shmget(9999, sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+		perror("shmget Pfault");
+		exit(1);
+	}
+	PageTablepfault = (PageTable *) shmat(segPfault, 0, 0);
+	if (PageTablepfault == (PageTable *)(-1)) {
+		perror("shmat Pfault");
+		exit(1);
+	}
+    
+    
+    
+    */
+    
+    
     
 //  Add to page table
+/*
     while(i<64){
         if(pt[i].vazio == 0){
             pt[i].page_index = page_index;
@@ -65,7 +86,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
             break;
         }
         i++;
-    }
+    }*/
     
     shmdt (pt);
     shmctl (segPT, IPC_RMID, 0);
