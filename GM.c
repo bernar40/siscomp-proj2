@@ -95,7 +95,7 @@ int main(void) {
                     Px[3] = P4;
 
 
-                    while(k<256){//#EDITING precisa inicializar tudo
+                    while(k<256){//inicializa tudo
 						mem_fisica[k] = (PageFrame*)malloc(sizeof(PageFrame));
                         mem_fisica[k]->self_index = k;
                         mem_fisica[k]->vazio = 1;
