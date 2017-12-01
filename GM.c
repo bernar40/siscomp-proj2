@@ -24,6 +24,7 @@ PageTable *PageTablep2;
 PageTable *PageTablep3;
 PageTable *PageTablep4;
 minHeap frameHeap;
+int *Px;
 int main(void) {
     int P1, P2, P3, P4;
     unsigned int i, o;
@@ -40,7 +41,7 @@ int main(void) {
                 if(P4){
                     // ###########    Processo GM --- Pai     ###########
                     int segP1, segP2, segP3, segP4, segPx, segPfault;
-					        int *Px;
+					
                     int k = 0;
 
                     if ((segP1 = shmget(1111, 64*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
@@ -94,14 +95,40 @@ int main(void) {
                     Px[3] = P4;
 
 
-                    while(k<256){
+                    while(k<256){//#EDITING precisa inicializar tudo
 						mem_fisica[k] = (PageFrame*)malloc(sizeof(PageFrame));
-                        mem_fisica[k]->vazio = 0;
+                        mem_fisica[k]->self_index = k;
+                        mem_fisica[k]->vazio = 1;
+						mem_fisica[k]->pid = -1;
+						mem_fisica[k]->page_index = -1;
                         mem_fisica[k]->value = 0;
-                        PageTablep1[k].vazio = 0;
-                        PageTablep2[k].vazio = 0;
-                        PageTablep3[k].vazio = 0;
-                        PageTablep4[k].vazio = 0;
+						mem_fisica[k]->b_written = 0;
+						
+                        PageTablep1[k].vazio = 1;
+						PageTablep1[k].frameNum = -1;
+						PageTablep1[k].rw = 0;
+						PageTablep1[k].page_index = k;
+						PageTablep1[k].pid = Px[0];
+						
+						
+                        PageTablep2[k].vazio = 1;
+						PageTablep2[k].frameNum = -1;
+						PageTablep2[k].rw = 0;
+						PageTablep2[k].page_index = k;
+						PageTablep2[k].pid = Px[1];
+						
+                        PageTablep3[k].vazio = 1;
+						PageTablep3[k].frameNum = -1;
+						PageTablep3[k].rw = 0;
+						PageTablep3[k].page_index = k;
+						PageTablep3[k].pid = Px[2];
+						
+                        PageTablep4[k].vazio = 1;
+						PageTablep4[k].frameNum = -1;
+						PageTablep4[k].rw = 0;
+						PageTablep4[k].page_index = k;
+						PageTablep4[k].pid = Px[3];
+						
                         k++;
                     }
 					//Constroi Heap de minimos para os frames
@@ -195,16 +222,18 @@ void sleep1sec(int signal){
 void sleep2sec(int signal){
 	sleep(2);
 }
-void pageFault(int signal){//#EDITING	
+void pageFault(int signal){	
 	if(DEBUG)
 		printf("\nSIGUSR1 received by %d: Entered pageFault",getpid());
 
 	//Shmem para pegar as informações do processo que teve pagefault
 	int segPfault;
+	int requsitador_pid, perdedor_pid;
 	PageFrame *min = deleteNode(&frameHeap);
 	int sleep_time;	//Quanto o processo que deu page fault deverá dormir
 	PageTable *pFault;
-
+    PageTable *pt_requsitador,*pt_perdedor;
+	int segPT;
 
 	if ((segPx = shmget(9999, sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
 		perror("shmget Pfault");
@@ -216,7 +245,23 @@ void pageFault(int signal){//#EDITING
 		exit(1);
 	}
 
-	kill(pFault->pid,SIGSTOP);
+	requsitador_pid = pFault->pid;
+	//carrega a pt do processo que enviou sigfault
+	if (requsitador_pid == Px[0])
+        memID = 1111;
+    else if(requsitador_pid == Px[1])
+        memID = 2222;
+    else if(requsitador_pid == Px[2])
+        memID = 3333;
+    else if(requsitador_pid == Px[3])
+        memID = 4444;
+    segPT = shmget(memID, 64*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
+    printf("SegPT: %d\n", segPT);
+    pt_requsitador = (PageTable *) shmat(segPT, 0, 0);
+	
+	
+	
+	kill(requsitador_pid,SIGSTOP);
 	//Caso haja um frame vazio
 	if(min->vazio){
 		if(DEBUG)
@@ -226,12 +271,30 @@ void pageFault(int signal){//#EDITING
 	else{
 		if(DEBUG)
 			printf("\n\tmin is not empty");
+			
+			//carrega a pt do processo que perderá a página
+			perdedor_pid = min->pid;
+			if (perdedor_pid == Px[0])
+				memID = 1111;
+			else if(perdedor_pid == Px[1])
+				memID = 2222;
+			else if(perdedor_pid == Px[2])
+				memID = 3333;
+			else if(perdedor_pid == Px[3])
+				memID = 4444;
+			segPT = shmget(memID, 64*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
+			printf("SegPT: %d\n", segPT);
+			pt_perdedor = (PageTable *) shmat(segPT, 0, 0);
+			//apaga da pt, a ligação com o frame
+			pt_perdedor[min->page_index].frameNum = -1;
+			pt_perdedor[min->page_index].rw = 0;
+			pt_perdedor[min->page_index].vazio = 1;
+		
 		//Caso a página eleita tenha sido modificada
 		if(min->b_written){
 			if(DEBUG)
 				printf("\n\t\tmin is written");
 			sleep_time = 2;
-			//Atualizar tabela do processo que perdeu(min->pid)
 		}
 		else{
 			if(DEBUG)
@@ -244,7 +307,7 @@ void pageFault(int signal){//#EDITING
 	min->value = 1;
 	min->vazio = 0;
 	min->b_written = (pFault->rw == "W" || pFault->rw == "w")?1:0;
-	min->pid = pFault->pid;
+	min->pid = requsitador_pid;
 	if(DEBUG){
 		printf("\n\t\t\tpFault:");
 		printf("\n\t\t\t\tpage_index = %d",pFault->page_index);
@@ -260,6 +323,8 @@ void pageFault(int signal){//#EDITING
 		printf("\n\t\t\t\tpid = %d",min->pid);
 	}
 	//Atualizar tabela do processo que ganhou
-
+	pt_requsitador[min->page_index].frameNum = min->self_index;
+	pt_requsitador[min->page_index].rw = (pFault->rw == "W" || pFault->rw == "w")?"w":"r";
+	pt_requsitador[min->page_index].vazio = 0;
 
 }

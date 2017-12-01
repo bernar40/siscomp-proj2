@@ -51,11 +51,12 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 //  Virtual -> Physical
 	//frameNumber = page_index;
 	/*Traduzir page_index pra frame_number*/
-	frameNumber = pt[frame_number];
+	frameNumber = pt[page_index].frameNum;
 	physicaladdr = frameNumber<<24 + offset;
     
     
-    
+    //#EDITING 
+	//da pageFault se pt[page_index].vazio == 1
     /*Se der pageFault, essa é a memória compartilhada a ser criada
 	int segPfault;
     if ((segPx = shmget(9999, sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
