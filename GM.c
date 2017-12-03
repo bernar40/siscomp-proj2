@@ -15,11 +15,8 @@
 #define EVER ;;
 #define DEBUG 1
 #define IPCMNI 262144
-/* //#EDITING
-implementar as duas funções abaixo
 void sleep1sec(int signal);
 void sleep2sec(int signal);
-*/
 void pageFault(int signal);
 PageFrame **mem_fisica;
 PageTable *PageTablep1;
@@ -161,8 +158,8 @@ int main(void) {
                 }
                 else{
                     // ###########    Processo P4 --- Filho 4     ###########
-					//signal(SIGUSR1, sleep1sec);					
-					//signal(SIGUSR2, sleep2sec);                   
+					signal(SIGUSR1, sleep1sec);					
+					signal(SIGUSR2, sleep2sec);                   
 					FILE *fp4 = fopen("compilador.log", "r");
                     int pidP4 = getpid();
                     while(fscanf(fp4, "%x %c", &addr, &rw)){
@@ -176,8 +173,8 @@ int main(void) {
             }
             else{
                 // ###########    Processo P3 --- Filho 3     ###########
-				//signal(SIGUSR1, sleep1sec);				
-				//signal(SIGUSR2, sleep2sec);                
+				signal(SIGUSR1, sleep1sec);				
+				signal(SIGUSR2, sleep2sec);                
 				FILE *fp3 = fopen("compressor.log", "r");
                 int pidP3 = getpid();
                 while(fscanf(fp3, "%x %c", &addr, &rw)){
@@ -191,8 +188,8 @@ int main(void) {
         }
         else{
             // ###########    Processo P2 --- Filho 2     ###########
-			//signal(SIGUSR1, sleep1sec);			
-			//signal(SIGUSR2, sleep2sec);            
+			signal(SIGUSR1, sleep1sec);			
+			signal(SIGUSR2, sleep2sec);            
 			FILE *fp2 = fopen("matriz.log", "r");
             int pidP2 = getpid();
             while(fscanf(fp2, "%x %c", &addr, &rw)){
@@ -206,8 +203,8 @@ int main(void) {
     }
     else{
         // ###########    Processo P1 --- Filho 1     ###########
-		//signal(SIGUSR1, sleep1sec);		
-		//signal(SIGUSR2, sleep2sec);        
+		signal(SIGUSR1, sleep1sec);		
+		signal(SIGUSR2, sleep2sec);        
 		FILE *fp1 = fopen("simulador.log", "r");
         int pidP1 = getpid();
         while(fscanf(fp1, "%x %c", &addr, &rw)){
@@ -235,7 +232,6 @@ void pageFault(int signal){
 	int segPfault;
 	int requsitador_pid, perdedor_pid;
 	PageFrame *min = deleteNode(&frameHeap);
-	int sleep_time;	//Quanto o processo que deu page fault deverá dormir
 	PageTable *pFault;
     PageTable *pt_requsitador,*pt_perdedor;
 	int segPT;
@@ -267,12 +263,13 @@ void pageFault(int signal){
 	
 	if((pFault->frameNum>-1)&&(pFault->vazio)){
 		//CASO PAGEFAULT
-		kill(requsitador_pid,SIGSTOP);
+		
+		//kill(requsitador_pid,SIGSTOP);
 		//Caso haja um frame vazio
 		if(min->vazio){
 			if(DEBUG)
 				printf("\n\tmin is empty");
-			sleep_time = 1;
+			kill(requsitador_pid,SIGUSR1);
 		}
 		else{
 			if(DEBUG)
@@ -300,12 +297,12 @@ void pageFault(int signal){
 			if(min->b_written){
 				if(DEBUG)
 					printf("\n\t\tmin is written");
-				sleep_time = 2;
+				kill(requsitador_pid,SIGUSR2);
 			}
 			else{
 				if(DEBUG)
 					printf("\n\t\tmin is not written");
-				sleep_time = 1;
+				kill(requsitador_pid,SIGUSR1);
 			}
 		}
 		//Inserir no frame
@@ -341,14 +338,17 @@ void pageFault(int signal){
 			mem_fisica[pFault->frameNum]->b_written=1;
 		//soma 1 a valor
 		mem_fisica[pFault->frameNum]->value++;
+		//Garante que o processo retorne a executar
+		kill(requsitador_pid,SIGCONT);
 		
 	}
 	
 }
-//#EDITING
 void sleep1sec(int signal){
-	
+	printf("\n\tProc %d dormirá 1 seg.",getpid());
+	sleep(1);
 }
 void sleep2sec(int signal){
-	
+	printf("\n\tProc %d dormirá 2 seg.",getpid());
+	sleep(2);
 }

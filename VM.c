@@ -72,7 +72,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	/*Irá chamar o GM, independente se deu pageFault ou n
 	o GM precisa atualizar o contador do frame e mudar o bit b_written se for "w"*/
 	kill(Px[4],SIGUSR1);
-	
+	raise(SIGSTOP);
 	//agora já há um frameNum acossiado, se não havia antes
 	frameNumber = pt[page_index].frameNum);
 	physicaladdr = frameNumber<<24 + offset;
