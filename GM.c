@@ -15,6 +15,7 @@
 #define EVER ;;
 #define DEBUG 1
 #define IPCMNI 262144
+#define DEFAULT_DELTA 30
 void sleep1sec(int signal);
 void sleep2sec(int signal);
 void pageFault(int signal);
@@ -25,12 +26,12 @@ PageTable *PageTablep3;
 PageTable *PageTablep4;
 minHeap frameHeap;
 int *Px;
-int main(void) {
+int main(int argc, int *argv[]) {
     int P1, P2, P3, P4;
     unsigned int i, o;
     unsigned int addr;
     char rw;
-    
+    int *delta_miliseconds;
     P1 = fork();
     if(P1){
         P2 = fork();
@@ -137,11 +138,24 @@ int main(void) {
 					buildMinHeap(frameHeap,mem_fisica,256);
 					
                     signal( SIGUSR1, pageFault);
-					
+					//Lê, dos parâmetros dados, o delta que será utilizado para calcular a frequência de uso de um frame
+					if(argc>1){
+						#if DEBUG
+							printf("\nargc>1,*delta_miliseconds = %d",*argv[1]);
+						#endif
+						*delta_miliseconds = *argv[1];
+					}
+					else{
+						#if DEBUG
+							printf("\nargc<=1,*delta_miliseconds = DEFAULT_DELTA");
+						#endif
+						*delta_miliseconds = DEFAULT_DELTA;
+					}
                     for(EVER){
                         printf("GM executando...\n");
                         sleep(1);
 						//#EDITING
+						
 						/*Dado um certo tempo passado (de acordo com o enunciado), subtrai 1 de cada frame->value*/
                     }
                     
@@ -311,7 +325,7 @@ void pageFault(int signal){
 		min->vazio = 0;
 		min->b_written = (pFault->rw == "W" || pFault->rw == "w")?1:0;
 		min->pid = requsitador_pid;
-		if(DEBUG){
+		#if DEBUG
 			printf("\n\t\t\tpFault:");
 			printf("\n\t\t\t\tpage_index = %d",pFault->page_index);
 			printf("\n\t\t\t\tvalue = %d",pFault->value);
@@ -324,7 +338,7 @@ void pageFault(int signal){
 			printf("\n\t\t\t\tvazio = %d",min->vazio);
 			printf("\n\t\t\t\tb_written = %d",min->b_written);
 			printf("\n\t\t\t\tpid = %d",min->pid);
-		}
+		#endif
 		//Atualizar tabela do processo que ganhou
 		pt_requsitador[min->page_index].frameNum = min->self_index;
 		pt_requsitador[min->page_index].rw = (pFault->rw == "W" || pFault->rw == "w")?"w":"r";
