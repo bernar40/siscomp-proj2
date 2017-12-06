@@ -124,7 +124,7 @@ void insertNode(minHeap *hp, PageFrame *data) {
 PageFrame* deleteNode(minHeap *hp) {
 	PageFrame *returnable;
     if(hp->size) {
-        printf("\nDeleting node root node") ;
+        printf("Deleting node root node\n") ;
 		returnable = hp->elem[0].data;
         hp->elem[0] = hp->elem[--(hp->size)] ;
         hp->elem = realloc(hp->elem, hp->size * sizeof(node)) ;

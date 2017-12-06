@@ -103,13 +103,9 @@ int main(int argc, char *argv[]) {
                     }
                     
                     Px[0] = P1;
-				printf("\nPx[0] = %d",Px[0]);
                     Px[1] = P2;
-				printf("\nPx[1] = %d",Px[1]);
                     Px[2] = P3;
-				printf("\nPx[2] = %d",Px[2]);
                     Px[3] = P4;
-				printf("\nPx[3] = %d",Px[3]);
                     Px[4] = getpid();
                     
                     
@@ -303,7 +299,9 @@ void pageFault(int signal){
     pt_requsitador = (PageTable *) shmat(segPT, 0, 0);
 
 
-    if((pFault->frameNum==-1)&&(pFault->vazio)){
+    printf("pFault->frameNum = %d\n", pFault->frameNum);
+    printf("pFault->vazio = %d\n", pFault->vazio);
+    if((pFault->frameNum == -1)&&(pFault->vazio)){
         //CASO PAGEFAULT
         printf("Entrando no caso pagefault\n");
         
@@ -384,6 +382,8 @@ void pageFault(int signal){
         printf("Caso nao eh pageFault\n");
         
         //se é write
+        printf("pFault0>rw = %c\n", pFault->rw);
+        printf("pFault->frameNum = %d\n", pFault->frameNum);
         if(pFault->rw=='W'||pFault->rw=='w')
             mem_fisica[pFault->frameNum]->b_written=1;
         //soma 1 a valor

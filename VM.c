@@ -30,7 +30,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
     int frameNumber;
     unsigned int physicaladdr;
 	int segPfault;
-	if ((segPx = shmget(5555, 4*sizeof(int), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
+	if ((segPx = shmget(5555, 5*sizeof(int), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
 		perror("shmget segPx trans");
 		exit(1);
 	}
