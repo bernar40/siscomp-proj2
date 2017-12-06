@@ -1,2 +1,3 @@
 clear
-gcc GM.c minHeap.c VM.h -o GM
+gcc -pthread GM.c minHeap.c VM.c -o GM
+./GM

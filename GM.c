@@ -21,6 +21,7 @@
 void sleep1sec(int signal);
 void sleep2sec(int signal);
 void pageFault(int signal);
+void treat_ctrl_C(int signal);
 void *threadproc(void *arg);
 PageFrame **mem_fisica;
 // PageFrame *mem_fisica;
@@ -29,6 +30,7 @@ PageTable *PageTablep2;
 PageTable *PageTablep3;
 PageTable *PageTablep4;
 minHeap frameHeap;
+int segP1, segP2, segP3, segP4, segPx, segPfault;
 int *Px;
 int main(int argc, char *argv[]) {
     int P1, P2, P3, P4;
@@ -45,7 +47,6 @@ int main(int argc, char *argv[]) {
                 P4 = fork();
                 if(P4){
                     // ###########    Processo GM --- Pai     ###########
-                    int segP1, segP2, segP3, segP4, segPx, segPfault;
                     pthread_t tid;
                     int k = 0;
                     
@@ -149,6 +150,7 @@ int main(int argc, char *argv[]) {
                     buildMinHeap(&frameHeap,mem_fisica,256);
                     
                     signal(SIGUSR1, pageFault);
+                    signal(SIGINT, treat_ctrl_C);
                     //Lê, dos parâmetros dados, o delta que será utilizado para calcular a frequência de uso de um frame
                     if(argc>1){
 #if DEBUG
@@ -165,21 +167,13 @@ int main(int argc, char *argv[]) {
 
                     pthread_create(&tid, NULL, &threadproc, mem_fisica);
                     for(EVER){
-                        printf("GM executando...\n");
-                        sleep(1);
+                        //printf("GM executando...\n");
+                        //sleep(1);
                         //#EDITING
                         
                         /*Dado um certo tempo passado (de acordo com o enunciado), subtrai 1 de cada frame->value*/
                     }
                     
-                    //                    shmdt (PageTablep1);
-                    //                    shmdt (PageTablep2);
-                    //                    shmdt (PageTablep3);
-                    //                    shmdt (PageTablep4);
-                    //                    shmctl (segP1, IPC_RMID, 0);
-                    //                    shmctl (segP2, IPC_RMID, 0);
-                    //                    shmctl (segP3, IPC_RMID, 0);
-                    //                    shmctl (segP4, IPC_RMID, 0);
                     
                     
                 }
@@ -194,7 +188,7 @@ int main(int argc, char *argv[]) {
                         i = addr >> 24;
                         o = addr & 0x00FFFFFF;
                         trans(pidP4, i, o, rw);
-                        printf("lendo...\n");
+                        //printf("lendo...\n");
                     }
                     printf("compilador.log Done\n");
                     
@@ -406,4 +400,16 @@ void *threadproc(void *arg)
     //     //printf("hello world\n");
     // }
     return 0;
+}
+void treat_ctrl_C(int signal){
+	
+    shmdt (PageTablep1);
+    shmdt (PageTablep2);
+    shmdt (PageTablep3);
+    shmdt (PageTablep4);
+    shmctl (segP1, IPC_RMID, 0);
+    shmctl (segP2, IPC_RMID, 0);
+    shmctl (segP3, IPC_RMID, 0);
+    shmctl (segP4, IPC_RMID, 0);
+	exit(0);
 }
