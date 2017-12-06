@@ -1,2 +1,2 @@
 clear
-gcc minHeap.h minHeap.c VM.h VM.c GM.c -o GM
+gcc GM.c minHeap.c VM.h -o GM

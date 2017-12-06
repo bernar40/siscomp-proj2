@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
                     PageTablep4 = (PageTable *) shmat(segP4, 0, 0);
                     Px = (int *) shmat(segPx, 0, 0);
                     mem_fisica = (PageFrame **) malloc(256*sizeof(PageFrame*));
-                    mem_fisica = (PageFrame *) malloc(256*sizeof(PageFrame));
+                   // mem_fisica = (PageFrame *) malloc(256*sizeof(PageFrame));
 
 
                     if (PageTablep1 == (PageTable *)(-1)) {
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
                         mem_fisica[k]->pid = -1;
                         mem_fisica[k]->page_index = -1;
                         mem_fisica[k]->value = 0;
-                        mem_fisica[k]->b_written = 0
+                        mem_fisica[k]->b_written = 0;
                         // mem_fisica[k].self_index = k;
                         // mem_fisica[k].vazio = 1;
                         // mem_fisica[k].pid = -1;
@@ -299,6 +299,7 @@ void pageFault(int signal){
         if(min->vazio){
             if(DEBUG)
                 printf("/tmin is empty");
+            kill(requsitador_pid,SIGCONT);
             kill(requsitador_pid,SIGUSR1);
         }
         else{
@@ -327,11 +328,13 @@ void pageFault(int signal){
             if(min->b_written){
                 if(DEBUG)
                     printf("\t\tmin is written\n");
+                kill(requsitador_pid,SIGCONT);
                 kill(requsitador_pid,SIGUSR2);
             }
             else{
                 if(DEBUG)
                     printf("\t\tmin is not written\n");
+                kill(requsitador_pid,SIGCONT);
                 kill(requsitador_pid,SIGUSR1);
             }
         }
