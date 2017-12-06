@@ -279,7 +279,7 @@ void pageFault(int signal){
         memID = 4444;
     if(DEBUG)
         printf("SIGUSR1 received by %d: Entered pageFault\n",memID);
-    segPT = shmget(memID, 64*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
+    segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
     printf("Programa requisatando pFault: %d\n", memID);
     pt_requsitador = (PageTable *) shmat(segPT, 0, 0);
 
@@ -310,7 +310,7 @@ void pageFault(int signal){
                 memID = 3333;
             else if(perdedor_pid == Py[3])
                 memID = 4444;
-            segPT = shmget(memID, 64*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
+            segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
             printf("Programa que perdera Frame: %d\n", memID);
             pt_perdedor = (PageTable *) shmat(segPT, 0, 0);
             //apaga da pt, a ligação com o frame

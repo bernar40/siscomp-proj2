@@ -43,7 +43,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
     else if(program_pid == Px[3])
         memID = 4444;
     
-    segPT = shmget(memID, 64*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
+    segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
     printf("Programa no trans: %d\n", memID);
 
     pt = (PageTable *) shmat(segPT, 0, 0);
@@ -80,4 +80,8 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
     
     shmdt (pt);
     shmctl (segPT, IPC_RMID, 0);
+    shmdt (Px);
+    shmctl (segPx, IPC_RMID, 0);
+    shmdt (PageTablepfault);
+    shmctl (segPfault, IPC_RMID, 0);
 }
