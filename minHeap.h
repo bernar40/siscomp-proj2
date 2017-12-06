@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "VM.h"
 
 #define LCHILD(x) 2 * x + 1
 #define RCHILD(x) 2 * x + 2
@@ -15,12 +14,12 @@
 
 typedef struct node {
     PageFrame *data ;
-} node ;
+} node;
 
 typedef struct minHeap {
     int size ;
     node *elem ;
-} minHeap ;
+} minHeap;
 
 /*
     Function to initialize the min heap with size = 0

@@ -22,8 +22,8 @@
 #include <sys/mman.h>
 
 void trans(int program_pid, unsigned int page_index, unsigned int offset, char rw){
-//    VPN is 8 bits, offset is 24
-    PageTable *pt;
+//    VPN is 8 bits,p offset is 24
+    PageTable *pt, *PageTablepfault;
     int *Px;
     int segPT, segPx, memID;
     int i=0;
@@ -43,7 +43,6 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
     else if(program_pid == Px[3])
         memID = 4444;
     
-//    printf("Program %d is executing trans\n", memID);
     segPT = shmget(memID, 64*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
     printf("SegPT: %d\n", segPT);
 
@@ -74,24 +73,9 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	kill(Px[4],SIGUSR1);
 	raise(SIGSTOP);
 	//agora já há um frameNum acossiado, se não havia antes
-	frameNumber = pt[page_index].frameNum);
-	physicaladdr = frameNumber<<24 + offset;
+	frameNumber = pt[page_index].frameNum;
+	physicaladdr = (frameNumber<<24) + offset;
 	printf("\n%d, 0x%X, %c",getpid(),physicaladdr,rw);
-
-        
-//  Add to page table
-/*
-    while(i<64){
-        if(pt[i].vazio == 0){
-            pt[i].page_index = page_index;
-            pt[i].frameNum = frameNumber;
-            pt[i].rw = rw;
-            pt[i].vazio = 1;
-            printf("PID: %d -- i: %d -- FN: %d -- bit: %c -- vazio: %d\n", program_pid, pt[i].page_index, pt[i].frameNum, pt[i].rw, pt[i].vazio = 1);
-            break;
-        }
-        i++;
-    }*/
     
     shmdt (pt);
     shmctl (segPT, IPC_RMID, 0);

@@ -176,7 +176,7 @@ void inorderTraversal(minHeap *hp, int i) {
     if(LCHILD(i) < hp->size) {
         inorderTraversal(hp, LCHILD(i)) ;
     }
-    printf("%d ", hp->elem[i].data) ;
+    //printf("%d ", hp->elem[i].data) ;
     if(RCHILD(i) < hp->size) {
         inorderTraversal(hp, RCHILD(i)) ;
     }
@@ -193,7 +193,7 @@ void preorderTraversal(minHeap *hp, int i) {
     if(RCHILD(i) < hp->size) {
         preorderTraversal(hp, RCHILD(i)) ;
     }
-    printf("%d ", hp->elem[i].data) ;
+    //printf("%d ", hp->elem[i].data) ;
 }
 
 
@@ -201,7 +201,7 @@ void preorderTraversal(minHeap *hp, int i) {
     Function to display all the nodes in the min heap by doing a post order traversal
 */
 void postorderTraversal(minHeap *hp, int i) {
-    printf("%d ", hp->elem[i].data) ;
+    //printf("%d ", hp->elem[i].data) ;
     if(LCHILD(i) < hp->size) {
         postorderTraversal(hp, LCHILD(i)) ;
     }
@@ -217,6 +217,6 @@ void postorderTraversal(minHeap *hp, int i) {
 void levelorderTraversal(minHeap *hp) {
     int i ;
     for(i = 0; i < hp->size; i++) {
-        printf("%d ", hp->elem[i].data) ;
+        //printf("%d ", hp->elem[i].data) ;
     }
 }

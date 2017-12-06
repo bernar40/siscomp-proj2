@@ -13,11 +13,12 @@ typedef struct {
 	//informações imutáveis após a criação
     int pid;
     unsigned int page_index;
+    char rw;
 	
 	//informações mutáveis após a criação
     int frameNum;
-    char rw;
-    int vazio;
+    int b_written;
+    int vazio; 
 }PageTable;
 
 void trans(int program_pid, unsigned int page_index, unsigned int offset, char rw);
