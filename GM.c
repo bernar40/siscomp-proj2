@@ -14,10 +14,12 @@
 #include <pthread.h>
 #include "VM.h"
 #include "minHeap.h"
+#include <time.h>
 #define EVER ;;
 #define DEBUG 1
 #define IPCMNI 262144
 #define DEFAULT_DELTA 30
+#define ARRAY_SIZE 256
 void sleep1sec(int signal);
 void sleep2sec(int signal);
 void pageFault(int signal);
@@ -28,13 +30,13 @@ PageTable *PageTablep2;
 PageTable *PageTablep3;
 PageTable *PageTablep4;
 minHeap frameHeap;
+int delta_miliseconds;
 int *Px;
 int main(int argc, char *argv[]) {
     int P1, P2, P3, P4;
     unsigned int i, o;
     unsigned int addr;
     char rw;
-    int delta_miliseconds;
     P1 = fork();
     if(P1){
         P2 = fork();
@@ -48,19 +50,19 @@ int main(int argc, char *argv[]) {
                     pthread_t tid;
                     int k = 0;
                     
-                    if ((segP1 = shmget(1111, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+                    if ((segP1 = shmget(1111, ARRAY_SIZE*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P1");
                         exit(1);
                     }
-                    if ((segP2 = shmget(2222, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+                    if ((segP2 = shmget(2222, ARRAY_SIZE*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P1");
                         exit(1);
                     }
-                    if ((segP3 = shmget(3333, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+                    if ((segP3 = shmget(3333, ARRAY_SIZE*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P1");
                         exit(1);
                     }
-                    if ((segP4 = shmget(4444, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+                    if ((segP4 = shmget(4444, ARRAY_SIZE*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P1");
                         exit(1);
                     }
@@ -74,7 +76,7 @@ int main(int argc, char *argv[]) {
                     PageTablep3 = (PageTable *) shmat(segP3, 0, 0);
                     PageTablep4 = (PageTable *) shmat(segP4, 0, 0);
                     Px = (int *) shmat(segPx, 0, 0);
-                    mem_fisica = (PageFrame **) malloc(256*sizeof(PageFrame*));
+                    mem_fisica = (PageFrame **) malloc(ARRAY_SIZE*sizeof(PageFrame*));
                     
                     if (PageTablep1 == (PageTable *)(-1)) {
                         perror("shmat P1");
@@ -100,7 +102,7 @@ int main(int argc, char *argv[]) {
                     Px[4] = getpid();
                     
                     
-                    while(k<256){//inicializa tudo
+                    while(k<ARRAY_SIZE){//inicializa tudo
                         mem_fisica[k] = (PageFrame*)malloc(sizeof(PageFrame));
                         mem_fisica[k]->self_index = k;
                         mem_fisica[k]->vazio = 1;
@@ -137,7 +139,7 @@ int main(int argc, char *argv[]) {
                     }
                     //Constroi Heap de minimos para os frames
                     frameHeap = initMinHeap();
-                    buildMinHeap(&frameHeap,mem_fisica,256);
+                    buildMinHeap(&frameHeap,mem_fisica,ARRAY_SIZE);
                     
                     signal(SIGUSR1, pageFault);
                     //Lê, dos parâmetros dados, o delta que será utilizado para calcular a frequência de uso de um frame
@@ -153,14 +155,14 @@ int main(int argc, char *argv[]) {
 #endif
                         delta_miliseconds = DEFAULT_DELTA;
                     }
-
+					
+                    //#EDITING
+                    //pthread_create precisa receber o frameHeap!!
                     pthread_create(&tid, NULL, &threadproc, (void *)&mem_fisica);
                     for(EVER){
                         printf("GM executando...\n");
                         sleep(1);
-                        //#EDITING
                         
-                        /*Dado um certo tempo passado (de acordo com o enunciado), subtrai 1 de cada frame->value*/
                     }
                     
                     //                    shmdt (PageTablep1);
@@ -370,10 +372,24 @@ void sleep2sec(int signal){
 }
 void *threadproc(void *arg)
 {
-    while(1)
-    {
-        sleep(2);
-        printf("hello world\n");
-    }
+	PageFrame **mem_fisica = (PageFrame **)*arg;
+	struct timespec slp;
+	struct timespec rest;
+	int i;
+	for(EVER){
+		slp.tv_sec = 0;
+		slp.tv_nsec = delta_miliseconds*1000000;
+		while(nanosleep(&slp,&rest)==-1){//garante que dormirá todo o tempo especificado, mesmo se o sono for interrompido
+			slp = rest;
+		}
+		
+		//percorre mem_fisica subtrai 1 de cada frame->value
+		for(i=0;i<ARRAY_SIZE;i++){
+			if(mem_fisica[i]->value>0)
+				mem_fisica[i]->value--;
+		}
+		//chama heapify pro frameHeap
+        
+	}
     return 0;
 }
