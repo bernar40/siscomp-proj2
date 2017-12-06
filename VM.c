@@ -30,8 +30,10 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
     int frameNumber;
     unsigned int physicaladdr;
 	int segPfault;
-    
-    segPx = shmget(5555, 4*sizeof(int), IPC_CREAT | S_IRUSR | S_IWUSR);
+	if ((segPx = shmget(5555, 4*sizeof(int), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
+		perror("shmget segPx trans");
+		exit(1);
+	}
     Px = (int *) shmat(segPx, 0, 0);
     
     if (program_pid == Px[0])
@@ -42,8 +44,10 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
         memID = 3333;
     else if(program_pid == Px[3])
         memID = 4444;
-    
-    segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
+    if ((segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
+		perror("shmget segPT trans");
+		exit(1);
+	}
     printf("Programa no trans: %d\n", memID);
 
     pt = (PageTable *) shmat(segPT, 0, 0);
@@ -52,7 +56,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	/*Traduzir page_index pra frame_number*/
 	//memória contém uma instância de PageTable para guardar informações
 	if ((segPfault = shmget(9999, sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-		perror("shmget Pfault");
+		perror("shmget Pfault trans");
 		exit(1);
 	}
 	PageTablepfault = (PageTable *) shmat(segPfault, 0, 0);

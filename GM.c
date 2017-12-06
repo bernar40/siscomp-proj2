@@ -51,23 +51,28 @@ int main(int argc, char *argv[]) {
                     int k = 0;
                     
                     if ((segP1 = shmget(1111, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-                        perror("shmget P1");
+                        perror("shmget P1 gm");
+			puts("1");
                         treat_ctrl_C(1);
                     }
                     if ((segP2 = shmget(2222, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-                        perror("shmget P1");
+                        perror("shmget P2 gm");
+			puts("2");
                         treat_ctrl_C(1);
                     }
                     if ((segP3 = shmget(3333, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-                        perror("shmget P1");
+                        perror("shmget P3 gm");
+			puts("3");
                         treat_ctrl_C(1);
                     }
                     if ((segP4 = shmget(4444, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-                        perror("shmget P1");
+                        perror("shmget P4 gm");
+			puts("4");
                         treat_ctrl_C(1);
                     }
                     if ((segPx = shmget(5555, 5*sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-                        perror("shmget Px");
+                        perror("shmget Px gm");
+			puts("x");
                         treat_ctrl_C(1);
                     }
                     
@@ -98,12 +103,17 @@ int main(int argc, char *argv[]) {
                     }
                     
                     Px[0] = P1;
+				printf("\nPx[0] = %d",Px[0]);
                     Px[1] = P2;
+				printf("\nPx[1] = %d",Px[1]);
                     Px[2] = P3;
+				printf("\nPx[2] = %d",Px[2]);
                     Px[3] = P4;
+				printf("\nPx[3] = %d",Px[3]);
                     Px[4] = getpid();
                     
                     
+
                     while(k<256){//inicializa tudo
                         mem_fisica[k] = (PageFrame*)malloc(sizeof(PageFrame));
                         mem_fisica[k]->self_index = k;
@@ -194,6 +204,9 @@ int main(int argc, char *argv[]) {
                     
                 }
             }
+            
+         }}
+					/*
             else{
                 // ###########    Processo P3 --- Filho 3     ###########
                 signal(SIGUSR1, sleep1sec);
@@ -238,6 +251,9 @@ int main(int argc, char *argv[]) {
         printf("simluador.log Done\n");
         
     }
+
+*/
+
     return 0;
 }
 
@@ -253,11 +269,14 @@ void pageFault(int signal){
     PageFrame *min = deleteNode(&frameHeap);
     PageTable *pFault;
     PageTable *pt_requsitador,*pt_perdedor;
-    int segPy, segPT;
+    int segPy, segPT, segPTp;
     
-    segPy = shmget(5555, 5*sizeof(int), IPC_CREAT | S_IRUSR | S_IWUSR);
+    if ((segPy = shmget(5555, 5*sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+        perror("shmget segPy pf");
+        treat_ctrl_C(1);
+    }
     if ((segPfault = shmget(9999, sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-        perror("shmget Pfault");
+        perror("shmget segPfault pf");
         treat_ctrl_C(1);
     }
     Py = (int *) shmat(segPy, 0, 0);
@@ -309,10 +328,13 @@ void pageFault(int signal){
             else if(perdedor_pid == Py[2])
                 memID = 3333;
             else if(perdedor_pid == Py[3])
-                memID = 4444;
-            segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
+                memID = 4444;  
+			if ((segPTp = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
+				perror("shmget segPTp pf");
+				treat_ctrl_C(1);
+    		}
             printf("Programa que perdera Frame: %d\n", memID);
-            pt_perdedor = (PageTable *) shmat(segPT, 0, 0);
+            pt_perdedor = (PageTable *) shmat(segPTp, 0, 0);
             //apaga da pt, a ligação com o frame
             pt_perdedor[min->page_index].frameNum = -1;
             pt_perdedor[min->page_index].b_written = 0;
@@ -376,6 +398,7 @@ void pageFault(int signal){
     shmctl (segPy, IPC_RMID, 0);
     shmdt (pt_requsitador);
     shmdt (pt_perdedor);
+    shmctl (segPTp, IPC_RMID, 0); 
     shmctl (segPT, IPC_RMID, 0);    
 }
 void sleep1sec(int signal){
@@ -413,9 +436,11 @@ void treat_ctrl_C(int signal){
     shmdt (PageTablep2);
     shmdt (PageTablep3);
     shmdt (PageTablep4);
+    shmdt (Px);
     shmctl (segP1, IPC_RMID, 0);
     shmctl (segP2, IPC_RMID, 0);
     shmctl (segP3, IPC_RMID, 0);
     shmctl (segP4, IPC_RMID, 0);
+    shmctl (segPx, IPC_RMID, 0);
 	exit(0);
 }
