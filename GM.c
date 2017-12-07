@@ -30,6 +30,13 @@ PageTable *PageTablep2;
 PageTable *PageTablep3;
 PageTable *PageTablep4;
 minHeap frameHeap;
+
+typedef struct {
+    PageFrame **pf;
+    minHeap mh;
+} args;
+
+args *thread_arg;
 int segP1, segP2, segP3, segP4, segPx, segPfault;
 int *Px;
 int main(int argc, char *argv[]) {
@@ -82,6 +89,7 @@ int main(int argc, char *argv[]) {
                     PageTablep4 = (PageTable *) shmat(segP4, 0, 0);
                     Px = (int *) shmat(segPx, 0, 0);
                     mem_fisica = (PageFrame **) malloc(256*sizeof(PageFrame*));
+                    thread_arg = (args *)malloc(sizeof(args));
                    // mem_fisica = (PageFrame *) malloc(256*sizeof(PageFrame));
                     
                     Px[0] = P1;
@@ -136,6 +144,9 @@ int main(int argc, char *argv[]) {
                     //Constroi Heap de minimos para os frames
                     frameHeap = initMinHeap();
                     buildMinHeap(&frameHeap,mem_fisica,256);
+
+                    thread_arg->pf = mem_fisica;
+                    thread_arg->mh = frameHeap;
                     
                     signal(SIGUSR1, pageFault);
                     signal(SIGINT, treat_ctrl_C);
@@ -153,7 +164,7 @@ int main(int argc, char *argv[]) {
                         delta_miliseconds = DEFAULT_DELTA;
                     }
 
-                    pthread_create(&tid, NULL, &threadproc, mem_fisica);
+                    pthread_create(&tid, NULL, &threadproc, (void *)thread_arg);
                     for(EVER){
                         //printf("GM executando...\n");
                         //sleep(1);
@@ -162,13 +173,14 @@ int main(int argc, char *argv[]) {
                         /*Dado um certo tempo passado (de acordo com o enunciado), subtrai 1 de cada frame->value*/
                     }
                     
-                    
+                    }}}}/*
                     
                 }
                 else{
                     // ###########    Processo P4 --- Filho 4     ###########
                     signal(SIGUSR1, sleep1sec);
                     signal(SIGUSR2, sleep2sec);
+                    sleep(1);
                     FILE *fp4 = fopen("compilador.log", "r");
                     int pidP4 = getpid();
                     // printf("PID P4 = %d\n", pidP4);
@@ -186,6 +198,7 @@ int main(int argc, char *argv[]) {
                 // ###########    Processo P3 --- Filho 3     ###########
                 signal(SIGUSR1, sleep1sec);
                 signal(SIGUSR2, sleep2sec);
+                sleep(1);
                 FILE *fp3 = fopen("compressor.log", "r");
                 int pidP3 = getpid();
                 while(fscanf(fp3, "%x %c", &addr, &rw)){
@@ -201,6 +214,7 @@ int main(int argc, char *argv[]) {
             // ###########    Processo P2 --- Filho 2     ###########
             signal(SIGUSR1, sleep1sec);
             signal(SIGUSR2, sleep2sec);
+            sleep(1);
             FILE *fp2 = fopen("matriz.log", "r");
             int pidP2 = getpid();
             while(fscanf(fp2, "%x %c", &addr, &rw)){
@@ -216,6 +230,7 @@ int main(int argc, char *argv[]) {
         // ###########    Processo P1 --- Filho 1     ###########
         signal(SIGUSR1, sleep1sec);
         signal(SIGUSR2, sleep2sec);
+        sleep(1);
         FILE *fp1 = fopen("simulador.log", "r");
         int pidP1 = getpid();
         while(fscanf(fp1, "%x %c", &addr, &rw)){
@@ -226,7 +241,7 @@ int main(int argc, char *argv[]) {
         printf("simluador.log Done\n");
         
     }
-
+*/
     return 0;
 }
 
@@ -388,23 +403,32 @@ void sleep2sec(int signal){
 }
 void *threadproc(void *arg)
 {
+    puts("oi");
     int k=0;
-    // PageFrame *mem_fisica = arg;
-    // while(1)
-    // {
-    //     sleep(2);
-    //     printf("Memoria fisica indice -> %d\n", k);
-               
-    //     printf("mem_fisica[%d]->pid = %d\n", k, mem_fisica[k].pid);
-    //     printf("mem_fisica[%d]->page_index = %d\n", k, mem_fisica[k].page_index); 
-    //     printf("mem_fisica[%d]->vazio = %d\n", k, mem_fisica[k].vazio);
-    //     printf("-------------------------\n");
+    args *actual_args = arg;
+    /*
+        actual_args->pf = mem_fisica (tratar do mesmo modo)
+        actual_args->mh = frameHeap (tratar do mesmo modo)
+    */
 
-    //     k++;
-    //     if(k>255)
-    //         k = 0;
-    //     //printf("hello world\n");
-    // }
+
+    while(1)
+    {
+        
+        printf("Memoria fisica indice -> %d\n", k);
+               
+        printf("mem_fisica[%d]->pid = %d\n", k, actual_args->pf[k]->pid);
+        printf("mem_fisica[%d]->page_index = %d\n", k, actual_args->pf[k]->page_index); 
+        printf("mem_fisica[%d]->vazio = %d\n", k, actual_args->pf[k]->vazio);
+        printf("-------------------------\n");
+
+        k++;
+        if(k>255)
+            k = 0;
+        //printf("hello world\n");
+        sleep(2);
+    }
+    free(actual_args);
     return 0;
 }
 void treat_ctrl_C(int signal){

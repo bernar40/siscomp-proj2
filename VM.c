@@ -7,6 +7,7 @@
 //
 
 #include "VM.h"
+
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -61,10 +62,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 		exit(1);
 	}
 	PageTablepfault = (PageTable *) shmat(segPfault, 0, 0);
-	if (PageTablepfault == (PageTable *)(-1)) {
-		perror("shmat Pfault");
-		exit(1);
-	}
+	
 	frameNumber = pt[page_index].frameNum;
 
 	if(frameNumber==-1||pt[page_index].vazio){
