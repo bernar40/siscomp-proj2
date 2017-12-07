@@ -110,12 +110,6 @@ int main(int argc, char *argv[]) {
                         mem_fisica[k]->page_index = -1;
                         mem_fisica[k]->value = 0;
                         mem_fisica[k]->b_written = 0;
-                        // mem_fisica[k].self_index = k;
-                        // mem_fisica[k].vazio = 1;
-                        // mem_fisica[k].pid = -1;
-                        // mem_fisica[k].page_index = -1;
-                        // mem_fisica[k].value = 0;
-                        // mem_fisica[k].b_written = 0;
                         
                         PageTablep1[k].vazio = 1;
                         PageTablep1[k].frameNum = -1;
@@ -152,13 +146,13 @@ int main(int argc, char *argv[]) {
                     //Lê, dos parâmetros dados, o delta que será utilizado para calcular a frequência de uso de um frame
                     if(argc>1){
 #if DEBUG
-                        printf("argc>1, delta_miliseconds = %d\n",atoi(argv[1]));
+                        //printf("argc>1, delta_miliseconds = %d\n",atoi(argv[1]));
 #endif
                         delta_miliseconds = atoi(argv[1]);
                     }
                     else{
 #if DEBUG
-                        printf("argc<=1, delta_miliseconds = DEFAULT_DELTA\n");
+                        //printf("argc<=1, delta_miliseconds = DEFAULT_DELTA\n");
 #endif
                         delta_miliseconds = DEFAULT_DELTA;
                     }
@@ -220,7 +214,7 @@ int main(int argc, char *argv[]) {
                 o = addr & 0x00FFFFFF;
                 trans(pidP2, i, o, rw);
             }
-            printf("matriz.log Done\n");
+            printf("matriz.log Done\n");printf("%d, 0x%X, %c\n",getpid(),physicaladdr,rw);
             
         }
     }
@@ -283,7 +277,7 @@ void pageFault(int signal){
    		 printf("SIGUSR1 received by %d: Entered pageFault\n",memID);
 	#endif
     segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
-    printf("Programa requisatando pFault: %d\n", memID);
+    //printf("Programa requisatando pFault: %d\n", memID);
     pt_requsitador = (PageTable *) shmat(segPT, 0, 0);
 
 
@@ -292,12 +286,12 @@ void pageFault(int signal){
 
     if((pFault->frameNum == -1)&&(pFault->vazio)){
         //CASO PAGEFAULT
-        printf("Entrando no caso pagefault\n");
+        //printf("Entrando no caso pagefault\n");
         
         //Caso haja um frame vazio
         if(min->vazio){
             #if DEBUG
-                printf("\tmin is empty\n");
+               // printf("\tmin is empty\n");
 		#endif
             kill(requsitador_pid,SIGCONT);
             kill(requsitador_pid,SIGUSR1);
@@ -321,7 +315,7 @@ void pageFault(int signal){
 				perror("shmget segPTp pf");
 				treat_ctrl_C(1);
     		}
-            printf("Programa que perdera Frame: %d\n", memID);
+           // printf("Programa que perdera Frame: %d\n", memID);
             pt_perdedor = (PageTable *) shmat(segPTp, 0, 0);
             //apaga da pt, a ligação com o frame
             pt_perdedor[min->page_index].frameNum = -1;
@@ -378,7 +372,7 @@ void pageFault(int signal){
     }
     else{
         //CASO NÃO É PAGEFAULT
-        printf("Caso nao eh pageFault\n");
+        //printf("Caso nao eh pageFault\n");
         
         //se é write
         //printf("pFault->rw = %c\n", pFault->rw);
@@ -403,11 +397,11 @@ void pageFault(int signal){
     //shmctl (segPT, IPC_RMID, 0);    
 }
 void sleep1sec(int signal){
-    printf("\tProc %d dormirá 1 seg.\n",getpid());
+    //printf("\tProc %d dormirá 1 seg.\n",getpid());
     sleep(1);
 }
 void sleep2sec(int signal){
-    printf("\tProc %d dormirá 2 seg.\n",getpid());
+    //printf("\tProc %d dormirá 2 seg.\n",getpid());
     sleep(2);
 }
 void *threadproc(void *arg){
@@ -432,26 +426,7 @@ void *threadproc(void *arg){
 		}
 		heapify(&(actual_args->mh),256);
 	}
-    /*while(1)
-    {
-        
-		
-		
-        printf("Memoria fisica indice -> %d\n", k);
-               
-        printf("mem_fisica[%d]->pid = %d\n", k, actual_args->pf[k]->pid);
-        printf("mem_fisica[%d]->page_index = %d\n", k, actual_args->pf[k]->page_index); 
-        printf("mem_fisica[%d]->vazio = %d\n", k, actual_args->pf[k]->vazio);
-        printf("-------------------------\n");
-
-        k++;
-        if(k>255)
-            k = 0;
-        //printf("hello world\n");
-        sleep(2);
-    }
-    free(actual_args);*/
-	
+ 
     return 0;
 }
 void treat_ctrl_C(int signal){

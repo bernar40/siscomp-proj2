@@ -124,14 +124,14 @@ void insertNode(minHeap *hp, PageFrame *data) {
 PageFrame* deleteNode(minHeap *hp) {
 	PageFrame *returnable;
     if(hp->size) {
-        printf("Deleting node root node\n") ;
+        //printf("Deleting node root node\n") ;
 		returnable = hp->elem[0].data;
         hp->elem[0] = hp->elem[--(hp->size)] ;
         hp->elem = realloc(hp->elem, hp->size * sizeof(node)) ;
         heapify(hp, 0) ;
 		return returnable;
     } else {
-        printf("\nMin Heap is empty!\n") ;
+        //printf("\nMin Heap is empty!\n") ;
         free(hp->elem) ;
 		return NULL;
     }

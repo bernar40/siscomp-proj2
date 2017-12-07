@@ -50,7 +50,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 		perror("shmget segPT trans");
 		exit(1);
 	}
-    printf("Programa no trans: %d\n", memID);
+    //printf("Programa no trans: %d\n", memID);
 
     pt = (PageTable *) shmat(segPT, 0, 0);
     
@@ -75,7 +75,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	}
 	/*Irá chamar o GM, independente se deu pageFault ou n
 	o GM precisa atualizar o contador do frame e mudar o bit b_written se for "w"*/
-	printf("%d mandando SIGUSR1 para o GM\n", memID);
+	//printf("%d mandando SIGUSR1 para o GM\n", memID);
 	kill(Px[4],SIGUSR1);
 	raise(SIGSTOP);
 	//agora já há um frameNum acossiado, se não havia antes
