@@ -365,7 +365,7 @@ void pageFault(int signal){
         pt_requsitador[min->page_index].frameNum = min->self_index;
         pt_requsitador[min->page_index].rw = (pFault->rw == 'W' || pFault->rw == 'w')?'w':'r';
         pt_requsitador[min->page_index].vazio = 0;
-
+		heapify(&minHeap,256);
         printf("pt_requsitador[%d].frameNum = %d\n",  min->page_index, min->self_index);
 
     }
@@ -380,7 +380,8 @@ void pageFault(int signal){
             mem_fisica[pFault->frameNum]->b_written=1;
         //soma 1 a valor
         mem_fisica[pFault->frameNum]->value++; // #EDITING erro esta acontecendo aqui por que pFault->frameNum = -1
-        //Garante que o processo retorne a executar
+        heapify(&minHeap,256);
+		//Garante que o processo retorne a executar
         kill(requsitador_pid,SIGCONT);
         
     }
@@ -404,17 +405,24 @@ void sleep2sec(int signal){
 void *threadproc(void *arg)
 {
     puts("oi");
-    int k=0;
+    int k=0,i;
     args *actual_args = arg;
     /*
         actual_args->pf = mem_fisica (tratar do mesmo modo)
         actual_args->mh = frameHeap (tratar do mesmo modo)
     */
 
-
-    while(1)
+	for(i=0;i<256;i++){
+		if(actual_args->pf[k]->value>0){
+			actual_args->pf[k]->value--;
+		}
+	}
+	heapify(&(actual_args->mh),256);
+    /*while(1)
     {
         
+		
+		
         printf("Memoria fisica indice -> %d\n", k);
                
         printf("mem_fisica[%d]->pid = %d\n", k, actual_args->pf[k]->pid);
@@ -428,7 +436,8 @@ void *threadproc(void *arg)
         //printf("hello world\n");
         sleep(2);
     }
-    free(actual_args);
+    free(actual_args);*/
+	
     return 0;
 }
 void treat_ctrl_C(int signal){
