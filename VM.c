@@ -21,43 +21,67 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/mman.h>
+#include "fila.h"
 
 void trans(int program_pid, unsigned int page_index, unsigned int offset, char rw){
+	
 //    VPN is 8 bits,p offset is 24
     PageTable *pt, *PageTablepfault;
     int *Px;
     int segPT, segPx, memID=0;
     int i=0;
+    int pid_index;//###############################
+    Fila *Proc_idx;//###############################
     int frameNumber;
     unsigned int physicaladdr;
-	int segPfault;
+	int segPfault, segFila;
 	if ((segPx = shmget(5555, 5*sizeof(int), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
 		perror("shmget segPx trans");
 		exit(1);
 	}
+
+	//###############################
+    if ((segFila = shmget(6666, sizeof(Fila), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+        perror("shmget Fila trans");
+        treat_ctrl_C(1);
+    }
+    Proc_idx = (Fila *) shmat(segFila, 0, 0);
+ 	//###############################
+
     Px = (int *) shmat(segPx, 0, 0);
     
-    if (program_pid == Px[0])
+    if (program_pid == Px[0]){
         memID = 1111;
-    else if(program_pid == Px[1])
+    	pid_index = 0;
+    }
+    else if(program_pid == Px[1]){
         memID = 2222;
-    else if(program_pid == Px[2])
+       	pid_index = 1;
+    }
+    else if(program_pid == Px[2]){
         memID = 3333;
-    else if(program_pid == Px[3])
+       	pid_index = 2;
+    }
+    else if(program_pid == Px[3]){
         memID = 4444;
-
+        pid_index = 3;
+    }
+	//###############################
+    fila_insere (Proc_idx, pid_index); //EH AQUI QUE TA DANDO RUIMMMMMM
+    //###############################
+    printf("INSERIDO PID INDEX %d\n", pid_index);
     if ((segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
 		perror("shmget segPT trans");
 		exit(1);
 	}
-    //printf("Programa no trans: %d\n", memID);
+    printf("Programa no trans: %d\n", memID);
 
     pt = (PageTable *) shmat(segPT, 0, 0);
     
 //  Virtual -> Physical
-	/*Traduzir page_index pra frame_number*/
+	//Traduzir page_index pra frame_number
 	//memória contém uma instância de PageTable para guardar informações
-	if ((segPfault = shmget(9999, sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+	if ((segPfault = shmget(9999, 4*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
 		perror("shmget Pfault trans");
 		exit(1);
 	}
@@ -66,16 +90,18 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	frameNumber = pt[page_index].frameNum;
 
 	if(frameNumber==-1||pt[page_index].vazio){
-		/*PAGEFAULT*/		
-		PageTablepfault->pid = getpid();
-		PageTablepfault->page_index = page_index;
-		PageTablepfault->frameNum = -1;
-		PageTablepfault->rw = rw;
-		PageTablepfault->vazio = 1;
+		//PAGEFAULT
+		//###############################		
+		PageTablepfault[pid_index].pid = getpid();
+		PageTablepfault[pid_index].page_index = page_index;
+		PageTablepfault[pid_index].frameNum = -1;
+		PageTablepfault[pid_index].rw = rw;
+		PageTablepfault[pid_index].vazio = 1;
+		//###############################
 	}
-	/*Irá chamar o GM, independente se deu pageFault ou n
-	o GM precisa atualizar o contador do frame e mudar o bit b_written se for "w"*/
-	//printf("%d mandando SIGUSR1 para o GM\n", memID);
+	//Irá chamar o GM, independente se deu pageFault ou n
+	//o GM precisa atualizar o contador do frame e mudar o bit b_written se for "w"
+	printf("%d mandando SIGUSR1 para o GM\n", memID);
 	kill(Px[4],SIGUSR1);
 	raise(SIGSTOP);
 	//agora já há um frameNum acossiado, se não havia antes
@@ -89,4 +115,5 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
     //shmctl (segPx, IPC_RMID, 0);
     shmdt (PageTablepfault);
     //shmctl (segPfault, IPC_RMID, 0);
+    
 }
