@@ -16,7 +16,7 @@
 #include "VM.h"
 #include "minHeap.h"
 #define EVER ;;
-#define DEBUG 1
+#define DEBUG 0
 #define IPCMNI 262144
 #define DEFAULT_DELTA 30
 void sleep1sec(int signal);
@@ -279,15 +279,16 @@ void pageFault(int signal){
         memID = 3333;
     else if(requsitador_pid == Py[3])
         memID = 4444;
-    if(DEBUG)
-        printf("SIGUSR1 received by %d: Entered pageFault\n",memID);
+    #if DEBUG
+   		 printf("SIGUSR1 received by %d: Entered pageFault\n",memID);
+	#endif
     segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
     printf("Programa requisatando pFault: %d\n", memID);
     pt_requsitador = (PageTable *) shmat(segPT, 0, 0);
 
 
-    printf("pFault->frameNum = %d\n", pFault->frameNum);
-    printf("pFault->vazio = %d\n", pFault->vazio);
+    //printf("pFault->frameNum = %d\n", pFault->frameNum);
+    //printf("pFault->vazio = %d\n", pFault->vazio);
 
     if((pFault->frameNum == -1)&&(pFault->vazio)){
         //CASO PAGEFAULT
@@ -295,14 +296,16 @@ void pageFault(int signal){
         
         //Caso haja um frame vazio
         if(min->vazio){
-            if(DEBUG)
+            #if DEBUG
                 printf("\tmin is empty\n");
+		#endif
             kill(requsitador_pid,SIGCONT);
             kill(requsitador_pid,SIGUSR1);
         }
         else{
-            if(DEBUG)
+            #if DEBUG
                 printf("\tmin is not empty\n");
+			#endif
             
             //carrega a pt do processo que perderá a página
             perdedor_pid = min->pid;
@@ -327,14 +330,16 @@ void pageFault(int signal){
             
             //Caso a página eleita tenha sido modificada
             if(min->b_written){
-                if(DEBUG)
+                #if DEBUG
                     printf("\t\tmin is written\n");
+				#endif
                 kill(requsitador_pid,SIGCONT);
                 kill(requsitador_pid,SIGUSR2);
             }
             else{
-                if(DEBUG)
+                #if DEBUG
                     printf("\t\tmin is not written\n");
+				#endif
                 kill(requsitador_pid,SIGCONT);
                 kill(requsitador_pid,SIGUSR1);
             }
@@ -376,8 +381,8 @@ void pageFault(int signal){
         printf("Caso nao eh pageFault\n");
         
         //se é write
-        printf("pFault->rw = %c\n", pFault->rw);
-        printf("pFault->frameNum = %d\n", pFault->frameNum);
+        //printf("pFault->rw = %c\n", pFault->rw);
+        //printf("pFault->frameNum = %d\n", pFault->frameNum);
         if(pFault->rw=='W'||pFault->rw=='w')
             mem_fisica[pFault->frameNum]->b_written=1;
         //soma 1 a valor

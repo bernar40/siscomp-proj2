@@ -81,7 +81,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	//agora já há um frameNum acossiado, se não havia antes
 	frameNumber = pt[page_index].frameNum;
 	physicaladdr = (frameNumber<<24) + offset;
-	printf("%d, 0x%X, %c ----- frameNumber = %d\n",getpid(),physicaladdr,rw, frameNumber);
+	printf("%d, 0x%X, %c\n",getpid(),physicaladdr,rw);
     
     shmdt (pt);
     //shmctl (segPT, IPC_RMID, 0);
