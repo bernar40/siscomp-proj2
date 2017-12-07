@@ -146,9 +146,6 @@ int main(int argc, char *argv[]) {
                     //Constroi Heap de minimos para os frames
                     frameHeap = initMinHeap();
                     buildMinHeap(&frameHeap,mem_fisica,256);
-
-                    thread_arg->pf = mem_fisica;
-                    thread_arg->mh = frameHeap;
                     
                     signal(SIGUSR1, pageFault);
                     signal(SIGINT, treat_ctrl_C);
@@ -165,18 +162,17 @@ int main(int argc, char *argv[]) {
 #endif
                         delta_miliseconds = DEFAULT_DELTA;
                     }
+                    thread_arg->pf = mem_fisica;
+                    thread_arg->mh = frameHeap;
 					thread_arg->m_seconds = delta_miliseconds;
                     pthread_create(&tid, NULL, &threadproc, (void *)thread_arg);
                     for(EVER){
                         //printf("GM executando...\n");
                         //sleep(1);
-                        //#EDITING
                         
                         /*Dado um certo tempo passado (de acordo com o enunciado), subtrai 1 de cada frame->value*/
                     }
-                    
-                    }}}}/*
-                    
+                        
                 }
                 else{
                     // ###########    Processo P4 --- Filho 4     ###########
@@ -243,7 +239,7 @@ int main(int argc, char *argv[]) {
         printf("simluador.log Done\n");
         
     }
-*/
+
     return 0;
 }
 
@@ -367,8 +363,8 @@ void pageFault(int signal){
         pt_requsitador[min->page_index].frameNum = min->self_index;
         pt_requsitador[min->page_index].rw = (pFault->rw == 'W' || pFault->rw == 'w')?'w':'r';
         pt_requsitador[min->page_index].vazio = 0;
-		heapify(&minHeap,256);
-        printf("pt_requsitador[%d].frameNum = %d\n",  min->page_index, min->self_index);
+		heapify(&frameHeap,256);
+        //printf("pt_requsitador[%d].frameNum = %d\n",  min->page_index, min->self_index);
 
     }
     else{
@@ -381,8 +377,8 @@ void pageFault(int signal){
         if(pFault->rw=='W'||pFault->rw=='w')
             mem_fisica[pFault->frameNum]->b_written=1;
         //soma 1 a valor
-        mem_fisica[pFault->frameNum]->value++; // #EDITING erro esta acontecendo aqui por que pFault->frameNum = -1
-        heapify(&minHeap,256);
+        mem_fisica[pFault->frameNum]->value++; 
+        heapify(&frameHeap,256);
 		//Garante que o processo retorne a executar
         kill(requsitador_pid,SIGCONT);
         
@@ -404,10 +400,9 @@ void sleep2sec(int signal){
     printf("\tProc %d dormirá 2 seg.\n",getpid());
     sleep(2);
 }
-void *threadproc(void *arg)
-{
-   // puts("oi");
-    int k=0,i;
+void *threadproc(void *arg){
+    
+    int i;
 	struct timespec req, rem;
     args *actual_args = arg;
     /*
@@ -420,11 +415,10 @@ void *threadproc(void *arg)
 		while(nanosleep(&req,&rem)<0){
 			req = rem;
 		}
-		
-		for(i=0;i<256;i++){
-			if(actual_args->pf[k]->value>0){
-				actual_args->pf[k]->value--;
-			}
+
+		for(i=0;i<256;i++){   
+			if(actual_args->pf[i]->value>0)
+				actual_args->pf[i]->value--;
 		}
 		heapify(&(actual_args->mh),256);
 	}
