@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -34,6 +35,7 @@ minHeap frameHeap;
 typedef struct {
     PageFrame **pf;
     minHeap mh;
+	int m_seconds;
 } args;
 
 args *thread_arg;
@@ -163,7 +165,7 @@ int main(int argc, char *argv[]) {
 #endif
                         delta_miliseconds = DEFAULT_DELTA;
                     }
-
+					thread_arg->m_seconds = delta_miliseconds;
                     pthread_create(&tid, NULL, &threadproc, (void *)thread_arg);
                     for(EVER){
                         //printf("GM executando...\n");
@@ -404,20 +406,28 @@ void sleep2sec(int signal){
 }
 void *threadproc(void *arg)
 {
-    puts("oi");
+   // puts("oi");
     int k=0,i;
+	struct timespec req, rem;
     args *actual_args = arg;
     /*
         actual_args->pf = mem_fisica (tratar do mesmo modo)
         actual_args->mh = frameHeap (tratar do mesmo modo)
     */
-
-	for(i=0;i<256;i++){
-		if(actual_args->pf[k]->value>0){
-			actual_args->pf[k]->value--;
+	while(1){
+		req.tv_sec = 0;
+		req.tv_nsec = actual_args->m_seconds*1000000;
+		while(nanosleep(&req,&rem)<0){
+			req = rem;
 		}
+		
+		for(i=0;i<256;i++){
+			if(actual_args->pf[k]->value>0){
+				actual_args->pf[k]->value--;
+			}
+		}
+		heapify(&(actual_args->mh),256);
 	}
-	heapify(&(actual_args->mh),256);
     /*while(1)
     {
         
