@@ -363,7 +363,8 @@ void pageFault(int signal){
         pt_requsitador[min->page_index].frameNum = min->self_index;
         pt_requsitador[min->page_index].rw = (pFault->rw == 'W' || pFault->rw == 'w')?'w':'r';
         pt_requsitador[min->page_index].vazio = 0;
-		heapify(&frameHeap,256);
+	insertNode(&frameHeap,min);
+	heapify(&frameHeap,256);
         //printf("pt_requsitador[%d].frameNum = %d\n",  min->page_index, min->self_index);
 
     }
@@ -377,7 +378,8 @@ void pageFault(int signal){
         if(pFault->rw=='W'||pFault->rw=='w')
             mem_fisica[pFault->frameNum]->b_written=1;
         //soma 1 a valor
-        mem_fisica[pFault->frameNum]->value++; 
+        mem_fisica[pFault->frameNum]->value++;
+	insertNode(&frameHeap,min);
         heapify(&frameHeap,256);
 		//Garante que o processo retorne a executar
         kill(requsitador_pid,SIGCONT);
