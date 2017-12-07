@@ -83,24 +83,6 @@ int main(int argc, char *argv[]) {
                     Px = (int *) shmat(segPx, 0, 0);
                     mem_fisica = (PageFrame **) malloc(256*sizeof(PageFrame*));
                    // mem_fisica = (PageFrame *) malloc(256*sizeof(PageFrame));
-
-
-                    if (PageTablep1 == (PageTable *)(-1)) {
-                        perror("shmat P1");
-                        treat_ctrl_C(1);
-                    }
-                    if (PageTablep2 == (PageTable *)(-1)) {
-                        perror("shmat P2");
-                        treat_ctrl_C(1);
-                    }
-                    if (PageTablep3 == (PageTable *)(-1)) {
-                        perror("shmat P3");
-                        treat_ctrl_C(1);
-                    }
-                    if (PageTablep4 == (PageTable *)(-1)) {
-                        perror("shmat P4");
-                        treat_ctrl_C(1);
-                    }
                     
                     Px[0] = P1;
                     Px[1] = P2;
@@ -194,15 +176,12 @@ int main(int argc, char *argv[]) {
                         i = addr >> 24;
                         o = addr & 0x00FFFFFF;
                         trans(pidP4, i, o, rw);
-                        //printf("lendo...\n");
                     }
                     printf("compilador.log Done\n");
                     
                 }
             }
             
-         }}
-					/*
             else{
                 // ###########    Processo P3 --- Filho 3     ###########
                 signal(SIGUSR1, sleep1sec);
@@ -248,8 +227,6 @@ int main(int argc, char *argv[]) {
         
     }
 
-*/
-
     return 0;
 }
 
@@ -275,12 +252,9 @@ void pageFault(int signal){
         perror("shmget segPfault pf");
         treat_ctrl_C(1);
     }
+
     Py = (int *) shmat(segPy, 0, 0);
     pFault = (PageTable *) shmat(segPfault, 0, 0);
-    if (pFault == (PageTable *)(-1)) {
-        perror("shmat Pfault");
-        treat_ctrl_C(1);
-    }
     
     requsitador_pid = pFault->pid;
     //carrega a pt do processo que enviou sigfault
@@ -301,15 +275,15 @@ void pageFault(int signal){
 
     printf("pFault->frameNum = %d\n", pFault->frameNum);
     printf("pFault->vazio = %d\n", pFault->vazio);
+
     if((pFault->frameNum == -1)&&(pFault->vazio)){
         //CASO PAGEFAULT
         printf("Entrando no caso pagefault\n");
         
-        //kill(requsitador_pid,SIGSTOP);
         //Caso haja um frame vazio
         if(min->vazio){
             if(DEBUG)
-                printf("/tmin is empty");
+                printf("\tmin is empty\n");
             kill(requsitador_pid,SIGCONT);
             kill(requsitador_pid,SIGUSR1);
         }
@@ -361,7 +335,7 @@ void pageFault(int signal){
 #if DEBUG
         printf("\t\t\tpFault:\n");
         printf("\t\t\t\tpage_index = %d\n",pFault->page_index);
-        printf("\t\t\t\tvalue = %d\n",pFault->frameNum);
+        printf("\t\t\t\tFrameNum = %d\n",pFault->frameNum);
         printf("\t\t\t\tvazio = %d\n",pFault->vazio);
         printf("\t\t\t\tb_written = %d\n",pFault->b_written);
         printf("\t\t\t\tpid = %d\n",pFault->pid);
@@ -376,13 +350,16 @@ void pageFault(int signal){
         pt_requsitador[min->page_index].frameNum = min->self_index;
         pt_requsitador[min->page_index].rw = (pFault->rw == 'W' || pFault->rw == 'w')?'w':'r';
         pt_requsitador[min->page_index].vazio = 0;
+
+        printf("pt_requsitador[%d].frameNum = %d\n",  min->page_index, min->self_index);
+
     }
     else{
         //CASO NÃO É PAGEFAULT
         printf("Caso nao eh pageFault\n");
         
         //se é write
-        printf("pFault0>rw = %c\n", pFault->rw);
+        printf("pFault->rw = %c\n", pFault->rw);
         printf("pFault->frameNum = %d\n", pFault->frameNum);
         if(pFault->rw=='W'||pFault->rw=='w')
             mem_fisica[pFault->frameNum]->b_written=1;
@@ -393,13 +370,13 @@ void pageFault(int signal){
         
     }
     shmdt (pFault);
-    shmctl (segPfault, IPC_RMID, 0);
+    //shmctl (segPfault, IPC_RMID, 0);
     shmdt (Py);
-    shmctl (segPy, IPC_RMID, 0);
+    //shmctl (segPy, IPC_RMID, 0);
     shmdt (pt_requsitador);
     shmdt (pt_perdedor);
-    shmctl (segPTp, IPC_RMID, 0); 
-    shmctl (segPT, IPC_RMID, 0);    
+    //shmctl (segPTp, IPC_RMID, 0); 
+    //shmctl (segPT, IPC_RMID, 0);    
 }
 void sleep1sec(int signal){
     printf("\tProc %d dormirá 1 seg.\n",getpid());

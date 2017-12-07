@@ -25,7 +25,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 //    VPN is 8 bits,p offset is 24
     PageTable *pt, *PageTablepfault;
     int *Px;
-    int segPT, segPx, memID;
+    int segPT, segPx, memID=0;
     int i=0;
     int frameNumber;
     unsigned int physicaladdr;
@@ -44,6 +44,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
         memID = 3333;
     else if(program_pid == Px[3])
         memID = 4444;
+
     if ((segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
 		perror("shmget segPT trans");
 		exit(1);
@@ -64,7 +65,9 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 		perror("shmat Pfault");
 		exit(1);
 	}
-	if((frameNumber = pt[page_index].frameNum)==-1||pt[page_index].vazio){
+	frameNumber = pt[page_index].frameNum;
+
+	if(frameNumber==-1||pt[page_index].vazio){
 		/*PAGEFAULT*/		
 		PageTablepfault->pid = getpid();
 		PageTablepfault->page_index = page_index;
@@ -80,12 +83,12 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	//agora já há um frameNum acossiado, se não havia antes
 	frameNumber = pt[page_index].frameNum;
 	physicaladdr = (frameNumber<<24) + offset;
-	printf("%d, 0x%X, %c\n",getpid(),physicaladdr,rw);
+	printf("%d, 0x%X, %c ----- frameNumber = %d\n",getpid(),physicaladdr,rw, frameNumber);
     
     shmdt (pt);
-    shmctl (segPT, IPC_RMID, 0);
+    //shmctl (segPT, IPC_RMID, 0);
     shmdt (Px);
-    shmctl (segPx, IPC_RMID, 0);
+    //shmctl (segPx, IPC_RMID, 0);
     shmdt (PageTablepfault);
-    shmctl (segPfault, IPC_RMID, 0);
+    //shmctl (segPfault, IPC_RMID, 0);
 }
