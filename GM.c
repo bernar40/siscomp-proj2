@@ -345,6 +345,12 @@ void pageFault(int signal){
         min->vazio = 0;
         min->b_written = (pFault->rw == 'W' || pFault->rw == 'w')?1:0;
         min->pid = requsitador_pid;
+
+        //Atualizar tabela do processo que ganhou
+        pt_requsitador[min->page_index].frameNum = min->self_index;
+        pt_requsitador[min->page_index].rw = (pFault->rw == 'W' || pFault->rw == 'w')?'w':'r';
+        pt_requsitador[min->page_index].vazio = 0;
+
 #if DEBUG
         printf("\t\t\tpFault:\n");
         printf("\t\t\t\tpage_index = %d\n",pFault->page_index);
@@ -359,10 +365,7 @@ void pageFault(int signal){
         printf("\t\t\t\tb_written = %d\n",min->b_written);
         printf("\t\t\t\tpid = %d\n",min->pid);
 #endif
-        //Atualizar tabela do processo que ganhou
-        pt_requsitador[min->page_index].frameNum = min->self_index;
-        pt_requsitador[min->page_index].rw = (pFault->rw == 'W' || pFault->rw == 'w')?'w':'r';
-        pt_requsitador[min->page_index].vazio = 0;
+        
 	insertNode(&frameHeap,min);
 	heapify(&frameHeap,256);
         //printf("pt_requsitador[%d].frameNum = %d\n",  min->page_index, min->self_index);

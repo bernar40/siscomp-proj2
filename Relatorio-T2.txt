@@ -1,0 +1,583 @@
+##################################################
+RELATÓRIO por BERNARDO COSTA RUGA 1511651 e RODRIGO LEITE DA SILVA 1413150
+##################################################
+
+Um resumo do projeto: alguns parágrafos que descrevam a estrutura geral do seu
+simulador e as estruturas de dados relevantes (para implementação de cada algoritmo de substituição).
+
+
+
+Voce deve analisar (e comparar) a eficiência das susbstituições de paginas para três variantes do algoritmo LFU com três de comprimentos de períodos de tempo: por exemplo: acessos nos últimos 30 ms, nos últimos 90 ms, e nos 120 ms. E as três métricas de desempenho serão: duração da execuçãoo da simulação, numero de ocorrências de Page-faults e numero de ocorrências de escrita (simulada) de uma página modificada em um frame para a área de swap.
+
+
+Segundo Trabalho de Sistemas de Computação – INF 1019
+
+Arquivos: GM.c
+		  VM.c
+          VM.h
+		  minHeap.c
+		  minHeap.h
+          compressor.log
+          compilador.log
+          matriz.log
+          simulador.log
+
+
+Compilação:	gcc -pthread GM.c VM.c minHe.c -o GM
+
+Execução:	./GM <tempo>
+                    Obs: Quando não posto, automaticamente assume como 30
+
+Testes GM:
+
+    TEMPO = 30ms:
+            Programa no trans: 2222
+            2222 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 2222: Entered pageFault
+            Programa requisatando pFault: 2222
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 50
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 2599
+                        Frame:
+                Proc 2599 dormirá 1 seg.
+                            page_index = 50
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 2599
+            2599, 0xF5AB3A90, R ----- frameNumber = 245
+            Programa no trans: 2222
+            2222 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 2222: Entered pageFault
+            Programa requisatando pFault: 2222
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 50
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 2599
+                        Frame:
+                            page_index = 50
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 2599
+                Proc 2599 dormirá 1 seg.
+            2599, 0xA7B58, R ----- frameNumber = 0
+            Programa no trans: 2222
+            2222 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 2222: Entered pageFault
+            Programa requisatando pFault: 2222
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 50
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 2599
+                        Frame:
+                            page_index = 50
+                            value = 1
+                            vazio = 0
+                Proc 2599 dormirá 1 seg.
+                            b_written = 0
+                            pid = 2599
+            2599, 0xA7B58, R ----- frameNumber = 0
+            Programa no trans: 2222
+            2222 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 2222: Entered pageFault
+            Programa requisatando pFault: 2222
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 50
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 2599
+                        Frame:
+                            page_index = 50
+                Proc 2599 dormirá 1 seg.
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 2599
+            2599, 0xA7B60, R ----- frameNumber = 0
+            Programa no trans: 2222
+            2222 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 2222: Entered pageFault
+            Programa requisatando pFault: 2222
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 50
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 2599
+                        Frame:
+                            page_index = 50
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 2599
+                Proc 2599 dormirá 1 seg.
+            2599, 0xF1AB3AA0, R ----- frameNumber = 241
+            Programa no trans: 2222
+            2222 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 2222: Entered pageFault
+            Programa requisatando pFault: 2222
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 50
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 2599
+                        Frame:
+                            page_index = 50
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 2599
+                Proc 2599 dormirá 1 seg.
+            2599, 0xAFF70, R ----- frameNumber = 0
+            Programa no trans: 2222
+            2222 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 2222: Entered pageFault
+            Programa requisatando pFault: 2222
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 50
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 2599
+                        Frame:
+                            page_index = 50
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 2599
+                Proc 2599 dormirá 1 seg.
+            2599, 0xA7B68, R ----- frameNumber = 0
+            Programa no trans: 2222
+            2222 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 2222: Entered pageFault
+            Programa requisatando pFault: 2222
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 50
+                Proc 2599 dormirá 1 seg.
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 2599
+                        Frame:
+                            page_index = 50
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 2599
+            2599, 0xA7B68, R ----- frameNumber = 0
+
+    Tempo 60:
+            argc>1, delta_miliseconds = 60
+            Programa no trans: 4444
+            Programa no trans: 3333
+            3333 mandando SIGUSR1 para o GM
+            Programa no trans: 2222
+            Programa no trans: 1111
+            1111 mandando SIGUSR1 para o GM
+            2222 mandando SIGUSR1 para o GM
+            4444 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 4444: Entered pageFault
+            Programa requisatando pFault: 4444
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+            3054, 0xFF41F7A0, R ----- frameNumber = -1
+            Programa no trans: 4444
+            4444 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 4444: Entered pageFault
+            Programa requisatando pFault: 4444
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 19
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3054
+                        Frame:
+                            page_index = 19
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3054
+                Proc 3054 dormirá 1 seg.
+                        pFault:
+                            page_index = 19
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3054
+                        Frame:
+                            page_index = 19
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3054
+                Proc 3054 dormirá 1 seg.
+            3054, 0xF5E2C0, R ----- frameNumber = 0
+            Programa no trans: 4444
+            4444 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 4444: Entered pageFault
+            Programa requisatando pFault: 4444
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+            3054, 0xFFE78900, R ----- frameNumber = -1
+            Programa no trans: 4444
+            4444 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 4444: Entered pageFault
+            Programa requisatando pFault: 4444
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is not empty
+            Programa que perdera Frame: 4444
+                    min is not written
+                        pFault:
+                            page_index = 0
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3054
+                        Frame:
+                            page_index = 0
+                            value = 1
+                Proc 3054 dormirá 1 seg.
+                            vazio = 0
+                            b_written = 0
+                            pid = 3054
+                        pFault:
+                            page_index = 0
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3054
+                        Frame:
+                            page_index = 0
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3054
+                Proc 3054 dormirá 1 seg.
+            3054, 0xFE4758A0, R ----- frameNumber = 254
+            Programa no trans: 4444
+            4444 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 4444: Entered pageFault
+            Programa requisatando pFault: 4444
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is not empty
+            Programa que perdera Frame: 4444
+                    min is not written
+            3054, 0xFF348900, W ----- frameNumber = -1
+            Programa no trans: 4444
+            4444 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 4444: Entered pageFault
+            Programa requisatando pFault: 4444
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is not empty
+            Programa que perdera Frame: 4444
+                    min is not written
+                        pFault:
+                            page_index = 49
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3054
+                        Frame:
+                            page_index = 49
+                            value = 1
+                            vazio = 0
+                            b_written = 1
+                            pid = 3054
+                Proc 3054 dormirá 1 seg.
+                        pFault:
+                            page_index = 49
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3054
+                        Frame:
+                            page_index = 49
+                            value = 1
+                            vazio = 0
+                            b_written = 1
+                            pid = 3054
+                Proc 3054 dormirá 1 seg.
+            3054, 0xFF4A30E0, R ----- frameNumber = -1
+            Programa no trans: 4444
+            4444 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 4444: Entered pageFault
+            Programa requisatando pFault: 4444
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is not empty
+            Programa que perdera Frame: 4444
+                    min is not written
+            3054, 0xFF00FF05, R ----- frameNumber = -1
+            Programa no trans: 4444
+            4444 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 4444: Entered pageFault
+            Programa requisatando pFault: 4444
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is not empty
+            Programa que perdera Frame: 4444
+                    min is written
+                        pFault:
+                            page_index = 0
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3054
+                Proc 3054 dormirá 2 seg.
+                        Frame:
+                            page_index = 0
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3054
+                Proc 3054 dormirá 1 seg.
+                        pFault:
+                            page_index = 0
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+
+
+    Tempo 120:
+            argc>1, delta_miliseconds = 120
+            Programa no trans: 3333
+            Programa no trans: 4444
+            4444 mandando SIGUSR1 para o GM
+            Programa no trans: 2222
+            Programa no trans: 1111
+            1111 mandando SIGUSR1 para o GM
+            2222 mandando SIGUSR1 para o GM
+            3333 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 3333: Entered pageFault
+            Programa requisatando pFault: 3333
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+            3032, 0xFFB243A0, R ----- frameNumber = -1
+            Programa no trans: 3333
+            3333 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 3333: Entered pageFault
+            Programa requisatando pFault: 3333
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+                        pFault:
+                            page_index = 0
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3032
+                        Frame:
+                            page_index = 0
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3032
+                Proc 3032 dormirá 1 seg.
+                        pFault:
+                            page_index = 0
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3032
+                        Frame:
+                            page_index = 0
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3032
+                Proc 3032 dormirá 1 seg.
+            3032, 0x228D40, R ----- frameNumber = 0
+            Programa no trans: 3333
+            3333 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 3333: Entered pageFault
+            Programa requisatando pFault: 3333
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is empty
+            3032, 0x228D60, R ----- frameNumber = 0
+            Programa no trans: 3333
+            3333 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 3333: Entered pageFault
+            Programa requisatando pFault: 3333
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is not empty
+            Programa que perdera Frame: 3333
+                    min is not written
+                        pFault:
+                            page_index = 7
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3032
+                        Frame:
+                            page_index = 7
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                Proc 3032 dormirá 1 seg.
+                            pid = 3032
+                        pFault:
+                            page_index = 7
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3032
+                        Frame:
+                            page_index = 7
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3032
+                Proc 3032 dormirá 1 seg.
+            3032, 0xFEB243C0, R ----- frameNumber = 254
+            Programa no trans: 3333
+            3333 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 3333: Entered pageFault
+            Programa requisatando pFault: 3333
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is not empty
+            Programa que perdera Frame: 3333
+                    min is not written
+            3032, 0xFF113360, R ----- frameNumber = -1
+            Programa no trans: 3333
+            3333 mandando SIGUSR1 para o GM
+            Deleting node root node
+            SIGUSR1 received by 3333: Entered pageFault
+            Programa requisatando pFault: 3333
+            pFault->frameNum = -1
+            pFault->vazio = 1
+            Entrando no caso pagefault
+                min is not empty
+            Programa que perdera Frame: 3333
+                    min is not written
+                        pFault:
+                            page_index = 0
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3032
+                        Frame:
+                            page_index = 0
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3032
+                Proc 3032 dormirá 1 seg.
+                        pFault:
+                            page_index = 0
+                            FrameNum = -1
+                            vazio = 1
+                            b_written = 0
+                            pid = 3032
+                        Frame:
+                            page_index = 0
+                            value = 1
+                            vazio = 0
+                            b_written = 0
+                            pid = 3032
+                Proc 3032 dormirá 1 seg.
+            3032, 0xFF1FE308, R ----- frameNumber = 255
+
+
+Sobre o projeto:
+    O nosso projeto conta com algumas estruturas de dados básicas e outras mais complexas. As mais simples são as estruturas de PageTable e PageFrame. A PageFrame, por exemplo, possui apenas algumas variáveis básicas para seu funcionamento, como o frame_index, o page_index, o pid do programa, entre outras. A PageTable funciona da mesma maneira, com algumas outras variaveis, como rw, e algumas mesmas, como o page_index. Estas estruturas, apesar de simples, tem papel fundamental no código, pois elas vão representar o equivalente a uma tabela de páginas e uma memória física, sendo elas atualizadas pelo GM, o gerenciador de memória. Neste projeto nos é pedido para implementar a substituição de frames utilizando LFU, onde o critério é o numéro de acessos à página nos últimos X ms. 
+
+    Para implementarmos isso fizemos uso de mais 2 estruturas de dados, uma é um min heap e a outra uma pequena estrutura que serve para passar paremetros para uma thread. Elas funcionam da seguinte maneira, o heap serve para que saibamos qual pagina está sendo menos usada, sendo ela a menos acessada, sua "count" estará baixa depois do tempo X, e logo com é um min heap, ela estará no topo do heap. Estando ela no topo do heap, quando o proximo page fault acontecer, o nó de cima será retirado e um novo entrará em seu lugar. Porém, isso só será possível com a ajuda de um thread. Com o thread, conseguimos fazer com que a cada X ms o thread subtraisse de cada frame um count, já que a cada acesso à uma página ele soma no count do frame. Porém, é necessário passar o nosso heap e a memória física para o thread para que ele pudesse subtrair e reorganizar o heap de acordo com os novos valores de count. A estrutura é apenas composta por um heap e um PageFrame, com isso, consigo atribuir a cada uma a memoria e o min heap, e depois passar para o thread como um argumento. 
+
+    O jeito que o programa funciona é o seguinte, ele primeiro  se divide em 5, sendo 4 filhos e 1 GM, e aloca uma mémoria compartilhada para cada tabela de páginas pertencente a cada filho. Após isso, ele grava o pid de cada filho em um array compartilhado, que servirá como guia para qual pagetable acessar no futuro. Depois, criamos o heap, tratamos alguns sinais, definimos qual o tempo escolhido pelo usuário, definimos os valores do thread e o começamos. Após isso o GM entra em um loop infinito. Enquanto isso, cada filho vai lendo uma linha de seu respectivo arquivo e calculando o index e o offset de cada endereço virtual, sendo 8 bits o index e 24 bits o offset. Cada programa então chama a função "trans" que tem como objetivo traduzir o endereço logíco recebido em um endereço físico. 
+
+    A função "trans()" é bem simples, ela começa vendo qual filho a está chamando comparando seu pid com o do vetor de pids criado recentemente. Isto lhe dara um código que sera o ID de cada page table. Após isso ele vai abrir a tabela de páginas conrrespondente e um indice ta tabela secundário para auxiliar na implementação, o pagetablefault, que é possui uma unica estrutura igual a tabela de páginas. Como no começo do código "resetamos" nossas váriaveis, na função trans() ele vai chegar se os parametros forem iguais ao resetados é pq a pagina precisa ir para pagefault, preenchemos o pagetablefault com informações pertinentes, chamos o SIGUSR1 que iniciará o processo de page fault e damos um SIGSTOP para que pare de exectuar até que já tenha ocorrido o pagefault. Após o processo retornar do pagefault, ele terá seu frame number, que se converterá em endereço físico junto ao offset e então o mesmo será printado na tela.
+
+    Por fim o "pagefault" funciona da seguinte maneira, (##################)EXPLICAR PARTE DE DELETENODE ANTES DE TUDO PQ EU NAO SEI PQ ELE FAZ ISSO, PRA MIM ISSO ESTARIA VAZIO ##################) ele começa carregando a pagetablefault para descobrir qual o pip do pragrama que requisitou o pagefault, após isso, usando a mesma técnica do trans, pegamos o ID correspondente à tabela de páginas do processo. Verificamos então se a página possui ou não frame number, se não é um caso de pagefault e então (#### VER PORQUE ELE PEGA min->VAZIO######) ele então utilizando a informação do heap, retira o elemento mais acima e o por como perdedor, onde terá alguns valores pertinentes alterados e dará lugar ao novo, o requisitado, como isso simula uma troca o programa parará por 1 sec. A tabela de paginas do requisitador é enfim preenchida e o pagefault acaba (se o pograma ja tivesse frame_num, ele entraria num caso especial onde apenas o count é somado).
+
+Análise:
+
+    O algoritmo do pagefault aparenta estar funcionando, porém acontece um imprevisto, esperavamos que a CPU fosse empilhar as chamadas de sinais e ir executando elas em fila. Por exemplo, se o P4 chamasse SIGUSR1 primeiro, e P2 depois, primeiro executaria o do P4 e apos isso o do P2. Só que isso não acontece. Os sinais são substituidos, o de P2 substitui o do P4 e o do P4 entra em SIGSTP e não sai mais, pois como não executa seu pagefault, não recebe o SIGCONT. Porém, tendo em mente o do P2, que parece funcionar conseguimos ver essas funcionalidades. Com 30 ms, temos que o programa funciona de maneira default, as primeiras páginas são empilhadas na tabela de frame, e com 30ms temos um número razoavel para checar qual página está sendo chamada mais frequentemente, porém como é o menor dos tempos pedidos (30, 60 e 120), ele acaba as vezes substituindo páginas que poderiam vir a ser mais usadas no futuro, so que isso é meio relativo com o que o computador quer, quanto maior o tempo, mais certeza se terá que uma pagina está sendo mais usada, e junto a isso terá mais tempo para "editar" uma página, sendo assim o número de swaps deveria se maior com o aumento do tempo, pois a pagina ficará mais tempo na memória e o algoritmo terá mais tempo de ler outro endereço da página que estara modificando a mesma. Sendo assim, quando menor o tempo, menor o número de swaps, porém maior o número de pagefaults. 
+
