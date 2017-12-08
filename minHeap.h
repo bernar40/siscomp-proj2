@@ -2,7 +2,7 @@
     File:   minHeap.h
     Desc:   header for minHeap.c
     Author: Rodrigo Leite <rodrigo.ldasilva@hotmail.com>
-	
+    
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,4 +73,3 @@ PageFrame* getMaxNode(minHeap *hp, int i);
     Function to clear the memory allocated for the min heap
 */
 void deleteMinHeap(minHeap *hp) ;
-

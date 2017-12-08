@@ -15,7 +15,6 @@
 #include <pthread.h>
 #include "VM.h"
 #include "minHeap.h"
-#include "fila.h"
 #define EVER ;;
 #define DEBUG 0
 #define IPCMNI 262144
@@ -25,7 +24,6 @@ void sleep2sec(int signal);
 void pageFault(int signal);
 void treat_ctrl_C(int signal);
 void *threadproc(void *arg);
-Fila *Proc_idx;//###############################
 PageFrame **mem_fisica;
 // PageFrame *mem_fisica;
 PageTable *PageTablep1;
@@ -37,10 +35,11 @@ minHeap frameHeap;
 typedef struct {
     PageFrame **pf;
     minHeap mh;
-	int m_seconds;
+    int m_seconds;
 } args;
+
 args *thread_arg;
-int segP1, segP2, segP3, segP4, segPx, segPfault, segFila;
+int segP1, segP2, segP3, segP4, segPx, segPfault;
 int *Px;
 int main(int argc, char *argv[]) {
     int P1, P2, P3, P4;
@@ -62,33 +61,30 @@ int main(int argc, char *argv[]) {
                     
                     if ((segP1 = shmget(1111, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P1 gm");
+            puts("1");
                         treat_ctrl_C(1);
                     }
                     if ((segP2 = shmget(2222, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P2 gm");
+            puts("2");
                         treat_ctrl_C(1);
                     }
                     if ((segP3 = shmget(3333, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P3 gm");
+            puts("3");
                         treat_ctrl_C(1);
                     }
                     if ((segP4 = shmget(4444, 256*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget P4 gm");
+            puts("4");
                         treat_ctrl_C(1);
                     }
                     if ((segPx = shmget(5555, 5*sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget Px gm");
+            puts("x");
                         treat_ctrl_C(1);
                     }
-                    //###############################
-                    if ((segFila = shmget(6666, sizeof(Fila), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-                        perror("shmget Fila trans");
-                        treat_ctrl_C(1);
-                    }
-
-                    Proc_idx = (Fila *) shmat(segFila, 0, 0);
-                    //###############################
-
+                    
                     PageTablep1 = (PageTable *) shmat(segP1, 0, 0);
                     PageTablep2 = (PageTable *) shmat(segP2, 0, 0);
                     PageTablep3 = (PageTable *) shmat(segP3, 0, 0);
@@ -96,8 +92,8 @@ int main(int argc, char *argv[]) {
                     Px = (int *) shmat(segPx, 0, 0);
                     mem_fisica = (PageFrame **) malloc(256*sizeof(PageFrame*));
                     thread_arg = (args *)malloc(sizeof(args));
+                   // mem_fisica = (PageFrame *) malloc(256*sizeof(PageFrame));
                     
-
                     Px[0] = P1;
                     Px[1] = P2;
                     Px[2] = P3;
@@ -105,8 +101,7 @@ int main(int argc, char *argv[]) {
                     Px[4] = getpid();
                     
                     
-                    Proc_idx = fila_cria();  //###############################
-                   
+
                     while(k<256){//inicializa tudo
                         mem_fisica[k] = (PageFrame*)malloc(sizeof(PageFrame));
                         mem_fisica[k]->self_index = k;
@@ -163,18 +158,16 @@ int main(int argc, char *argv[]) {
                     }
                     thread_arg->pf = mem_fisica;
                     thread_arg->mh = frameHeap;
-					thread_arg->m_seconds = delta_miliseconds;
+                    thread_arg->m_seconds = delta_miliseconds;
                     pthread_create(&tid, NULL, &threadproc, (void *)thread_arg);
-
                     for(EVER){
                         //printf("GM executando...\n");
                         //sleep(1);
                         
-                        //Dado um certo tempo passado (de acordo com o enunciado), subtrai 1 de cada frame->value
+                        /*Dado um certo tempo passado (de acordo com o enunciado), subtrai 1 de cada frame->value*/
                     }
                         
                 }
-                
                 else{
                     // ###########    Processo P4 --- Filho 4     ###########
                     signal(SIGUSR1, sleep1sec);
@@ -192,6 +185,7 @@ int main(int argc, char *argv[]) {
                     
                 }
             }
+            
             else{
                 // ###########    Processo P3 --- Filho 3     ###########
                 signal(SIGUSR1, sleep1sec);
@@ -244,41 +238,32 @@ int main(int argc, char *argv[]) {
 }
 
 void pageFault(int signal){
+    // if(DEBUG)
+    //     printf("SIGUSR1 received by %d: Entered pageFault\n",getpid());
+    
     //Shmem para pegar as informações do processo que teve pagefault
     int segPfault;
     int memID;
     int *Py;
-    Fila *Proc_idx;//###############################
-    int pid_index;//###############################
     int requsitador_pid, perdedor_pid;
     PageFrame *min = deleteNode(&frameHeap);
     PageTable *pFault;
     PageTable *pt_requsitador,*pt_perdedor;
-    int segPy, segPT, segPTp, segFila;//###############################
+    int segPy, segPT, segPTp;
     
     if ((segPy = shmget(5555, 5*sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
         perror("shmget segPy pf");
         treat_ctrl_C(1);
     }
-    if ((segPfault = shmget(9999, 4*sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+    if ((segPfault = shmget(9999, sizeof(PageTable), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
         perror("shmget segPfault pf");
         treat_ctrl_C(1);
     }
-    //###############################
-    if ((segFila = shmget(6666, sizeof(Fila), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
-        perror("shmget Fila trans");
-        treat_ctrl_C(1);
-    }
 
-    Proc_idx = (Fila *) shmat(segFila, 0, 0);
-    //###############################
     Py = (int *) shmat(segPy, 0, 0);
     pFault = (PageTable *) shmat(segPfault, 0, 0);
-    //###############################
-    pid_index = fila_retira (Proc_idx);
-    printf("P-INDEX = %d\n", pid_index);
-    requsitador_pid = pFault[pid_index].pid;
-    //###############################
+    
+    requsitador_pid = pFault->pid;
     //carrega a pt do processo que enviou sigfault
     if (requsitador_pid == Py[0])
         memID = 1111;
@@ -289,17 +274,17 @@ void pageFault(int signal){
     else if(requsitador_pid == Py[3])
         memID = 4444;
     #if DEBUG
-   		 printf("SIGUSR1 received by %d: Entered pageFault\n",memID);
-	#endif
+         printf("SIGUSR1 received by %d: Entered pageFault\n",memID);
+    #endif
     segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
-    printf("Programa requisatando pFault: %d\n", memID);
+    //printf("Programa requisatando pFault: %d\n", memID);
     pt_requsitador = (PageTable *) shmat(segPT, 0, 0);
 
 
     //printf("pFault->frameNum = %d\n", pFault->frameNum);
     //printf("pFault->vazio = %d\n", pFault->vazio);
 
-    if((pFault[pid_index].frameNum == -1)&&(pFault[pid_index].vazio)){//###############################
+    if((pFault->frameNum == -1)&&(pFault->vazio)){
         //CASO PAGEFAULT
         //printf("Entrando no caso pagefault\n");
         
@@ -307,14 +292,14 @@ void pageFault(int signal){
         if(min->vazio){
             #if DEBUG
                // printf("\tmin is empty\n");
-		#endif
+        #endif
             kill(requsitador_pid,SIGCONT);
             kill(requsitador_pid,SIGUSR1);
         }
         else{
             #if DEBUG
                 printf("\tmin is not empty\n");
-			#endif
+            #endif
             
             //carrega a pt do processo que perderá a página
             perdedor_pid = min->pid;
@@ -326,10 +311,10 @@ void pageFault(int signal){
                 memID = 3333;
             else if(perdedor_pid == Py[3])
                 memID = 4444;  
-			if ((segPTp = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
-				perror("shmget segPTp pf");
-				treat_ctrl_C(1);
-    		}
+            if ((segPTp = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
+                perror("shmget segPTp pf");
+                treat_ctrl_C(1);
+            }
            // printf("Programa que perdera Frame: %d\n", memID);
             pt_perdedor = (PageTable *) shmat(segPTp, 0, 0);
             //apaga da pt, a ligação com o frame
@@ -341,49 +326,47 @@ void pageFault(int signal){
             if(min->b_written){
                 #if DEBUG
                     printf("\t\tmin is written\n");
-				#endif
+                #endif
                 kill(requsitador_pid,SIGCONT);
                 kill(requsitador_pid,SIGUSR2);
             }
             else{
                 #if DEBUG
                     printf("\t\tmin is not written\n");
-				#endif
+                #endif
                 kill(requsitador_pid,SIGCONT);
                 kill(requsitador_pid,SIGUSR1);
             }
         }
         //Inserir no frame
-        min->page_index = pFault[pid_index].page_index;
+        min->page_index = pFault->page_index;
         min->value = 1;
         min->vazio = 0;
-        min->b_written = (pFault[pid_index].rw == 'W' || pFault[pid_index].rw == 'w')?1:0; //###############################
+        min->b_written = (pFault->rw == 'W' || pFault->rw == 'w')?1:0;
         min->pid = requsitador_pid;
 
         //Atualizar tabela do processo que ganhou
         pt_requsitador[min->page_index].frameNum = min->self_index;
-        pt_requsitador[min->page_index].rw = (pFault[pid_index].rw == 'W' || pFault[pid_index].rw == 'w')?'w':'r'; //###############################
+        pt_requsitador[min->page_index].rw = (pFault->rw == 'W' || pFault->rw == 'w')?'w':'r';
         pt_requsitador[min->page_index].vazio = 0;
 
 #if DEBUG
-        //###############################
         printf("\t\t\tpFault:\n");
-        printf("\t\t\t\tpage_index = %d\n",pFault[pid_index].page_index);
-        printf("\t\t\t\tFrameNum = %d\n",pFault[pid_index].frameNum);
-        printf("\t\t\t\tvazio = %d\n",pFault[pid_index].vazio);
-        printf("\t\t\t\tb_written = %d\n",pFault[pid_index].b_written);
-        printf("\t\t\t\tpid = %d\n",pFault[pid_index].pid);
+        printf("\t\t\t\tpage_index = %d\n",pFault->page_index);
+        printf("\t\t\t\tFrameNum = %d\n",pFault->frameNum);
+        printf("\t\t\t\tvazio = %d\n",pFault->vazio);
+        printf("\t\t\t\tb_written = %d\n",pFault->b_written);
+        printf("\t\t\t\tpid = %d\n",pFault->pid);
         printf("\t\t\tFrame:\n");
         printf("\t\t\t\tpage_index = %d\n",min->page_index);
         printf("\t\t\t\tvalue = %d\n",min->value);
         printf("\t\t\t\tvazio = %d\n",min->vazio);
         printf("\t\t\t\tb_written = %d\n",min->b_written);
         printf("\t\t\t\tpid = %d\n",min->pid);
-        //###############################
 #endif
         
-	insertNode(&frameHeap,min);
-	heapify(&frameHeap,256);
+    insertNode(&frameHeap,min);
+    heapify(&frameHeap,256);
         //printf("pt_requsitador[%d].frameNum = %d\n",  min->page_index, min->self_index);
 
     }
@@ -394,13 +377,13 @@ void pageFault(int signal){
         //se é write
         //printf("pFault->rw = %c\n", pFault->rw);
         //printf("pFault->frameNum = %d\n", pFault->frameNum);
-        if(pFault[pid_index].rw=='W'||pFault[pid_index].rw=='w')//###############################
-            mem_fisica[pFault[pid_index].frameNum]->b_written=1;//###############################
+        if(pFault->rw=='W'||pFault->rw=='w')
+            mem_fisica[pFault->frameNum]->b_written=1;
         //soma 1 a valor
-        mem_fisica[pFault[pid_index].frameNum]->value++;//###############################
-	insertNode(&frameHeap,min);
+        mem_fisica[pFault->frameNum]->value++;
+    insertNode(&frameHeap,min);
         heapify(&frameHeap,256);
-		//Garante que o processo retorne a executar
+        //Garante que o processo retorne a executar
         kill(requsitador_pid,SIGCONT);
         
     }
@@ -411,45 +394,43 @@ void pageFault(int signal){
     shmdt (pt_requsitador);
     shmdt (pt_perdedor);
     //shmctl (segPTp, IPC_RMID, 0); 
-    //shmctl (segPT, IPC_RMID, 0);  
-
+    //shmctl (segPT, IPC_RMID, 0);    
 }
-
 void sleep1sec(int signal){
-    printf("\tProc %d dormirá 1 seg.\n",getpid());
+    //printf("\tProc %d dormirá 1 seg.\n",getpid());
     sleep(1);
 }
 void sleep2sec(int signal){
-    printf("\tProc %d dormirá 2 seg.\n",getpid());
+    //printf("\tProc %d dormirá 2 seg.\n",getpid());
     sleep(2);
 }
 void *threadproc(void *arg){
     
     int i;
-	struct timespec req, rem;
+    struct timespec req, rem;
     args *actual_args = arg;
     /*
         actual_args->pf = mem_fisica (tratar do mesmo modo)
         actual_args->mh = frameHeap (tratar do mesmo modo)
     */
-	while(1){
-		req.tv_sec = 0;
-		req.tv_nsec = actual_args->m_seconds*1000000;
-		while(nanosleep(&req,&rem)<0){
-			req = rem;
-		}
+    while(1){
+        req.tv_sec = 0;
+        req.tv_nsec = actual_args->m_seconds*1000000;
+        while(nanosleep(&req,&rem)<0){
+            req = rem;
+        }
 
-		for(i=0;i<256;i++){   
-			if(actual_args->pf[i]->value>0)
-				actual_args->pf[i]->value--;
-		}
-		heapify(&(actual_args->mh),256);
-	}
+        for(i=0;i<256;i++){   
+            if(actual_args->pf[i]->value>0)
+                actual_args->pf[i]->value--;
+        }
+        heapify(&(actual_args->mh),256);
+    }
  
     return 0;
 }
 void treat_ctrl_C(int signal){
-	
+    
     shmdt (PageTablep1);
     shmdt (PageTablep2);
     shmdt (PageTablep3);
@@ -460,5 +441,5 @@ void treat_ctrl_C(int signal){
     shmctl (segP3, IPC_RMID, 0);
     shmctl (segP4, IPC_RMID, 0);
     shmctl (segPx, IPC_RMID, 0);
-	exit(0);
+    exit(0);
 }

@@ -3,9 +3,9 @@
     File:   minHeap.c
     Desc:   Program showing various operations on a binary min heap
     Author: Robin Thomas <robinthomas2591@gmail.com>
-	
-	Adapted: Rodrigo Leite <rodrigo.ldasilva@hotmail.com>
-		Data stored in node is now a pointer to a Page Frame.
+    
+    Adapted: Rodrigo Leite <rodrigo.ldasilva@hotmail.com>
+        Data stored in node is now a pointer to a Page Frame.
 */
 
 #include <stdio.h>
@@ -122,18 +122,18 @@ void insertNode(minHeap *hp, PageFrame *data) {
     is never violated, returning the data on the removed node
 */
 PageFrame* deleteNode(minHeap *hp) {
-	PageFrame *returnable;
+    PageFrame *returnable;
     if(hp->size) {
         //printf("Deleting node root node\n") ;
-		returnable = hp->elem[0].data;
+        returnable = hp->elem[0].data;
         hp->elem[0] = hp->elem[--(hp->size)] ;
         hp->elem = realloc(hp->elem, hp->size * sizeof(node)) ;
         heapify(hp, 0) ;
-		return returnable;
+        return returnable;
     } else {
         //printf("\nMin Heap is empty!\n") ;
         free(hp->elem) ;
-		return NULL;
+        return NULL;
     }
 }
 
