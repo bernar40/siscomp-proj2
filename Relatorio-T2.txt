@@ -31,539 +31,378 @@ Execução:	./GM <tempo>
 Testes GM:
 
     TEMPO = 30ms:
-            Programa no trans: 2222
-            2222 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 2222: Entered pageFault
-            Programa requisatando pFault: 2222
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 50
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 2599
-                        Frame:
-                Proc 2599 dormirá 1 seg.
-                            page_index = 50
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 2599
-            2599, 0xF5AB3A90, R ----- frameNumber = 245
-            Programa no trans: 2222
-            2222 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 2222: Entered pageFault
-            Programa requisatando pFault: 2222
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 50
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 2599
-                        Frame:
-                            page_index = 50
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 2599
-                Proc 2599 dormirá 1 seg.
-            2599, 0xA7B58, R ----- frameNumber = 0
-            Programa no trans: 2222
-            2222 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 2222: Entered pageFault
-            Programa requisatando pFault: 2222
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 50
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 2599
-                        Frame:
-                            page_index = 50
-                            value = 1
-                            vazio = 0
-                Proc 2599 dormirá 1 seg.
-                            b_written = 0
-                            pid = 2599
-            2599, 0xA7B58, R ----- frameNumber = 0
-            Programa no trans: 2222
-            2222 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 2222: Entered pageFault
-            Programa requisatando pFault: 2222
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 50
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 2599
-                        Frame:
-                            page_index = 50
-                Proc 2599 dormirá 1 seg.
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 2599
-            2599, 0xA7B60, R ----- frameNumber = 0
-            Programa no trans: 2222
-            2222 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 2222: Entered pageFault
-            Programa requisatando pFault: 2222
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 50
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 2599
-                        Frame:
-                            page_index = 50
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 2599
-                Proc 2599 dormirá 1 seg.
-            2599, 0xF1AB3AA0, R ----- frameNumber = 241
-            Programa no trans: 2222
-            2222 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 2222: Entered pageFault
-            Programa requisatando pFault: 2222
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 50
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 2599
-                        Frame:
-                            page_index = 50
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 2599
-                Proc 2599 dormirá 1 seg.
-            2599, 0xAFF70, R ----- frameNumber = 0
-            Programa no trans: 2222
-            2222 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 2222: Entered pageFault
-            Programa requisatando pFault: 2222
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 50
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 2599
-                        Frame:
-                            page_index = 50
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 2599
-                Proc 2599 dormirá 1 seg.
-            2599, 0xA7B68, R ----- frameNumber = 0
-            Programa no trans: 2222
-            2222 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 2222: Entered pageFault
-            Programa requisatando pFault: 2222
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 50
-                Proc 2599 dormirá 1 seg.
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 2599
-                        Frame:
-                            page_index = 50
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 2599
-            2599, 0xA7B68, R ----- frameNumber = 0
-
+            2677, 0xFF16FF60, W
+            2680, 0xFF41F7A0, R
+            2679, 0xFFB243A0, R
+            2678, 0xA7C20, R
+            2677, 0xFF42BF60, R
+            2680, 0xFFF5E2C0, R
+            2679, 0xFF228D40, R
+            2678, 0xFF56BBE0, W
+            2677, 0xFE293F60, W
+            2680, 0xFFE78900, R
+            2679, 0xFF228D60, R
+            2678, 0xFF0AFC20, R
+            2677, 0xFF41F760, R
+            2680, 0x4758A0, R
+            2679, 0xFFB243C0, R
+            2678, 0xFF216F00, R
+            2677, 0xFFC1F760, W
+            2680, 0xFF348900, W
+            2679, 0xFE113360, R
+            2678, 0xFF0A7C20, R
+            2677, 0xFF41F840, R
+            2680, 0xFF4A30E0, R
+            2679, 0xFF1FE308, R
+            2678, 0xA7C28, R
+            2677, 0xFF41F860, R
+            2680, 0xFF00FF05, R
+            2679, 0xFF113380, R
+            2678, 0xFF0A7C28, R
+            2677, 0xFEC6F840, W
+            2680, 0xFF49E120, R
+            2679, 0xFF1FE2F0, R
+            2678, 0xFF0AFF38, R
+            2677, 0xFF02FC60, W
+            2680, 0x4C25F8, R
+            2679, 0xFF1133A0, R
+            2678, 0xFF0A7B48, R
+            2677, 0xFF41F880, R
+            2680, 0xFF4C2600, R
+            2679, 0xFE1133C0, R
+            2678, 0xFF0A7B48, R
+            2677, 0xFF4952E0, R
+            2680, 0xFF05A5E0, W
+            2679, 0xFF22CCB0, R
+            2678, 0x216F00, W
+            2677, 0xFFC9D2E0, W
+            2680, 0xFFE06600, W
+            2679, 0xFF1133E0, R
+            2678, 0xFFAB3A90, R
+            2677, 0xFE495F10, R
+            2680, 0xFF44E4F8, R
+            2679, 0xFF113400, R
+            2678, 0xFF0A7B58, R
+            2677, 0xFFCE5305, W
+            2680, 0x44E500, R
+            2679, 0xFF22CCC0, R
+            2678, 0xFF0A7B58, R
+            2677, 0xFF4A3EC0, R
+            2680, 0xFF44E520, R
+            2679, 0xFE113420, R
+            2678, 0xFF0A7B60, R
+            2677, 0xFF41FDE0, R
+            2680, 0xFF00FF10, R
+            2679, 0xFF20A980, R
+            2678, 0xAB3AA0, R
+            2677, 0xFFBD7DE0, W
+            2680, 0xFF6965A0, W
+            2679, 0xFF20A968, R
+            2678, 0xFF0AFF70, R
+            2677, 0xFEE78900, R
+            2680, 0xFF44E5C0, R
+            2679, 0xFF113440, R
+            2678, 0xFF0A7B68, R
+            2677, 0xFF4758A0, R
+            2680, 0x44E5E0, R
+            2679, 0xFF113460, R
+            2678, 0xFF0A7B68, R
+            2677, 0xFFC70400, W
+            2680, 0xFF44E621, R
+            2679, 0xFE194730, R
+            2678, 0xFFAEF710, R
+            2677, 0xFFC706E0, W
+            2680, 0xFFDAE640, W
+            2679, 0xFF194740, R
+            2678, 0xA7B68, R
+            2677, 0xFF4006E0, R
+            2680, 0xFF414F20, R
+            2679, 0xFF194760, R
+            2678, 0xFF06FF90, R
+            2677, 0xFE19A8A0, W
+            2680, 0xFFF7CF20, W
+            2679, 0xFF194780, R
+            2678, 0xFF0A7B70, R
+            2677, 0xFF4A3EE0, R
+            2680, 0x4BCFC0, R
+            2679, 0xFF20A858, R
+            2678, 0xFF0A7B70, R
+            2677, 0xFF4A3F00, R
+            2680, 0xFF74CFC0, W
+            2679, 0xFEFEA840, W
+            2678, 0xFF86CD90, R
+            2677, 0xFFB5BF00, W
+            2680, 0xFF4696A0, R
+            2679, 0xFF1947A0, R
+            2678, 0xA7B78, R
+            2677, 0xFF4A3F20, R
+            2680, 0xFF446460, R
+            2679, 0xFF20A868, R
+            2678, 0xFF0A7B80, R
+            2677, 0xFE4A3098, R
+            2680, 0xFFF92120, W
+            2679, 0xFF1947C0, R
+            2678, 0xFFC2E058, W
+            2677, 0xFF4A74A0, R
+            2680, 0x496EC0, R
+            ^C##############################
+            Tempo de execucao do programa -> 116.279400
+            Numero de PageFaults -> 78
+            Numero de Swaps -> 22
+            ##############################
     Tempo 60:
-            argc>1, delta_miliseconds = 60
-            Programa no trans: 4444
-            Programa no trans: 3333
-            3333 mandando SIGUSR1 para o GM
-            Programa no trans: 2222
-            Programa no trans: 1111
-            1111 mandando SIGUSR1 para o GM
-            2222 mandando SIGUSR1 para o GM
-            4444 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 4444: Entered pageFault
-            Programa requisatando pFault: 4444
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-            3054, 0xFF41F7A0, R ----- frameNumber = -1
-            Programa no trans: 4444
-            4444 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 4444: Entered pageFault
-            Programa requisatando pFault: 4444
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 19
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3054
-                        Frame:
-                            page_index = 19
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3054
-                Proc 3054 dormirá 1 seg.
-                        pFault:
-                            page_index = 19
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3054
-                        Frame:
-                            page_index = 19
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3054
-                Proc 3054 dormirá 1 seg.
-            3054, 0xF5E2C0, R ----- frameNumber = 0
-            Programa no trans: 4444
-            4444 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 4444: Entered pageFault
-            Programa requisatando pFault: 4444
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-            3054, 0xFFE78900, R ----- frameNumber = -1
-            Programa no trans: 4444
-            4444 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 4444: Entered pageFault
-            Programa requisatando pFault: 4444
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is not empty
-            Programa que perdera Frame: 4444
-                    min is not written
-                        pFault:
-                            page_index = 0
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3054
-                        Frame:
-                            page_index = 0
-                            value = 1
-                Proc 3054 dormirá 1 seg.
-                            vazio = 0
-                            b_written = 0
-                            pid = 3054
-                        pFault:
-                            page_index = 0
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3054
-                        Frame:
-                            page_index = 0
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3054
-                Proc 3054 dormirá 1 seg.
-            3054, 0xFE4758A0, R ----- frameNumber = 254
-            Programa no trans: 4444
-            4444 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 4444: Entered pageFault
-            Programa requisatando pFault: 4444
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is not empty
-            Programa que perdera Frame: 4444
-                    min is not written
-            3054, 0xFF348900, W ----- frameNumber = -1
-            Programa no trans: 4444
-            4444 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 4444: Entered pageFault
-            Programa requisatando pFault: 4444
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is not empty
-            Programa que perdera Frame: 4444
-                    min is not written
-                        pFault:
-                            page_index = 49
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3054
-                        Frame:
-                            page_index = 49
-                            value = 1
-                            vazio = 0
-                            b_written = 1
-                            pid = 3054
-                Proc 3054 dormirá 1 seg.
-                        pFault:
-                            page_index = 49
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3054
-                        Frame:
-                            page_index = 49
-                            value = 1
-                            vazio = 0
-                            b_written = 1
-                            pid = 3054
-                Proc 3054 dormirá 1 seg.
-            3054, 0xFF4A30E0, R ----- frameNumber = -1
-            Programa no trans: 4444
-            4444 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 4444: Entered pageFault
-            Programa requisatando pFault: 4444
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is not empty
-            Programa que perdera Frame: 4444
-                    min is not written
-            3054, 0xFF00FF05, R ----- frameNumber = -1
-            Programa no trans: 4444
-            4444 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 4444: Entered pageFault
-            Programa requisatando pFault: 4444
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is not empty
-            Programa que perdera Frame: 4444
-                    min is written
-                        pFault:
-                            page_index = 0
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3054
-                Proc 3054 dormirá 2 seg.
-                        Frame:
-                            page_index = 0
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3054
-                Proc 3054 dormirá 1 seg.
-                        pFault:
-                            page_index = 0
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
+            2692, 0xFF41F7A0, R
+            2691, 0xFFB243A0, R
+            2690, 0xFF0A7C20, R
+            2689, 0x16FF60, W
+            2692, 0xFFF5E2C0, R
+            2691, 0xFF228D40, R
+            2690, 0xFF56BBE0, W
+            2689, 0xFF42BF60, R
+            2692, 0xFEE78900, R
+            2691, 0xFF228D60, R
+            2690, 0xFF0AFC20, R
+            2689, 0xFF293F60, W
+            2692, 0xFF4758A0, R
+            2691, 0xB243C0, R
+            2690, 0xFF216F00, R
+            2689, 0xFF41F760, R
+            2692, 0xFF348900, W
+            2691, 0xFF113360, R
+            2690, 0xFE0A7C20, R
+            2689, 0xFFC1F760, W
+            2692, 0xFF4A30E0, R
+            2691, 0xFF1FE308, R
+            2690, 0xFF0A7C28, R
+            2689, 0x41F840, R
+            2692, 0xFF00FF05, R
+            2691, 0xFF113380, R
+            2690, 0xFF0A7C28, R
+            2689, 0xFF41F860, R
+            2692, 0xFE49E120, R
+            2691, 0xFF1FE2F0, R
+            2690, 0xFF0AFF38, R
+            2689, 0xFFC6F840, W
+            2692, 0xFF4C25F8, R
+            2691, 0x1133A0, R
+            2690, 0xFF0A7B48, R
+            2689, 0xFF02FC60, W
+            2692, 0xFF4C2600, R
+            2691, 0xFF1133C0, R
+            2690, 0xFE0A7B48, R
+            2689, 0xFF41F880, R
+            2692, 0xFF05A5E0, W
+            2691, 0xFF22CCB0, R
+            2690, 0xFF216F00, W
+            2689, 0x4952E0, R
+            2692, 0xFFE06600, W
+            2691, 0xFF1133E0, R
+            2690, 0xFFAB3A90, R
+            2689, 0xFFC9D2E0, W
+            2692, 0xFE44E4F8, R
+            2691, 0xFF113400, R
+            2690, 0xFF0A7B58, R
+            2689, 0xFF495F10, R
+            2692, 0xFF44E500, R
+            2691, 0x22CCC0, R
+            2690, 0xFF0A7B58, R
+            2689, 0xFFCE5305, W
+            2692, 0xFF44E520, R
+            2691, 0xFF113420, R
+            2690, 0xFE0A7B60, R
+            2689, 0xFF4A3EC0, R
+            2692, 0xFF00FF10, R
+            2691, 0xFF20A980, R
+            2690, 0xFFAB3AA0, R
+            2689, 0x41FDE0, R
+            2692, 0xFF6965A0, W
+            2691, 0xFF20A968, R
+            2690, 0xFF0AFF70, R
+            2689, 0xFFBD7DE0, W
+            2692, 0xFE44E5C0, R
+            2691, 0xFF113440, R
+            2690, 0xFF0A7B68, R
+            2689, 0xFFE78900, R
+            2692, 0xFF44E5E0, R
+            2691, 0x113460, R
+            2690, 0xFF0A7B68, R
+            2689, 0xFF4758A0, R
+            2692, 0xFF44E621, R
+            2691, 0xFF194730, R
+            2690, 0xFEAEF710, R
+            2689, 0xFFC70400, W
+            2692, 0xFFDAE640, W
+            2691, 0xFF194740, R
+            2690, 0xFF0A7B68, R
+            2689, 0xC706E0, W
+            2692, 0xFF414F20, R
+            2691, 0xFF194760, R
+            2690, 0xFF06FF90, R
+            2689, 0xFF4006E0, R
+            2692, 0xFEF7CF20, W
+            2691, 0xFF194780, R
+            2690, 0xFF0A7B70, R
+            2689, 0xFF19A8A0, W
+            2692, 0xFF4BCFC0, R
+            2691, 0x20A858, R
+            2690, 0xFF0A7B70, R
+            2689, 0xFF4A3EE0, R
+            2692, 0xFF74CFC0, W
+            2691, 0xFFFEA840, W
+            2690, 0xFE86CD90, R
+            2689, 0xFF4A3F00, R
+            2692, 0xFF4696A0, R
+            2691, 0xFF1947A0, R
+            2690, 0xFF0A7B78, R
+            2689, 0xB5BF00, W
+            2692, 0xFF446460, R
+            2691, 0xFF20A868, R
+            2690, 0xFF0A7B80, R
+            2689, 0xFF4A3F20, R
+            2692, 0xFEF92120, W
+            2691, 0xFF1947C0, R
+            2690, 0xFFC2E058, W
+            2689, 0xFF4A3098, R
+            2692, 0xFF496EC0, R
+            2691, 0x24C3C0, R
+            2690, 0xFF0BFF90, R
+            2689, 0xFF4A74A0, R
+            ^C##############################
+            Tempo de execucao do programa -> 120.279129
+            Numero de PageFaults -> 77
+            Numero de Swaps -> 25
+            ##############################
+
 
 
     Tempo 120:
-            argc>1, delta_miliseconds = 120
-            Programa no trans: 3333
-            Programa no trans: 4444
-            4444 mandando SIGUSR1 para o GM
-            Programa no trans: 2222
-            Programa no trans: 1111
-            1111 mandando SIGUSR1 para o GM
-            2222 mandando SIGUSR1 para o GM
-            3333 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 3333: Entered pageFault
-            Programa requisatando pFault: 3333
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-            3032, 0xFFB243A0, R ----- frameNumber = -1
-            Programa no trans: 3333
-            3333 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 3333: Entered pageFault
-            Programa requisatando pFault: 3333
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-                        pFault:
-                            page_index = 0
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3032
-                        Frame:
-                            page_index = 0
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3032
-                Proc 3032 dormirá 1 seg.
-                        pFault:
-                            page_index = 0
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3032
-                        Frame:
-                            page_index = 0
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3032
-                Proc 3032 dormirá 1 seg.
-            3032, 0x228D40, R ----- frameNumber = 0
-            Programa no trans: 3333
-            3333 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 3333: Entered pageFault
-            Programa requisatando pFault: 3333
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is empty
-            3032, 0x228D60, R ----- frameNumber = 0
-            Programa no trans: 3333
-            3333 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 3333: Entered pageFault
-            Programa requisatando pFault: 3333
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is not empty
-            Programa que perdera Frame: 3333
-                    min is not written
-                        pFault:
-                            page_index = 7
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3032
-                        Frame:
-                            page_index = 7
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                Proc 3032 dormirá 1 seg.
-                            pid = 3032
-                        pFault:
-                            page_index = 7
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3032
-                        Frame:
-                            page_index = 7
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3032
-                Proc 3032 dormirá 1 seg.
-            3032, 0xFEB243C0, R ----- frameNumber = 254
-            Programa no trans: 3333
-            3333 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 3333: Entered pageFault
-            Programa requisatando pFault: 3333
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is not empty
-            Programa que perdera Frame: 3333
-                    min is not written
-            3032, 0xFF113360, R ----- frameNumber = -1
-            Programa no trans: 3333
-            3333 mandando SIGUSR1 para o GM
-            Deleting node root node
-            SIGUSR1 received by 3333: Entered pageFault
-            Programa requisatando pFault: 3333
-            pFault->frameNum = -1
-            pFault->vazio = 1
-            Entrando no caso pagefault
-                min is not empty
-            Programa que perdera Frame: 3333
-                    min is not written
-                        pFault:
-                            page_index = 0
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3032
-                        Frame:
-                            page_index = 0
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3032
-                Proc 3032 dormirá 1 seg.
-                        pFault:
-                            page_index = 0
-                            FrameNum = -1
-                            vazio = 1
-                            b_written = 0
-                            pid = 3032
-                        Frame:
-                            page_index = 0
-                            value = 1
-                            vazio = 0
-                            b_written = 0
-                            pid = 3032
-                Proc 3032 dormirá 1 seg.
-            3032, 0xFF1FE308, R ----- frameNumber = 255
+            2710, 0xFF41F7A0, R
+            2709, 0xFFB243A0, R
+            2708, 0x10A7C20, R
+            2707, 0xFF16FF60, W
+            2710, 0xF5E2C0, R
+            2709, 0xFE228D40, R
+            2708, 0xFF56BBE0, W
+            2707, 0x342BF60, R
+            2709, 0xFF228D60, R
+            2710, 0x1E78900, R
+            2708, 0x30AFC20, R
+            2707, 0xFF293F60, W
+            2709, 0x3B243C0, R
+            2710, 0xFF4758A0, R
+            2708, 0xFE216F00, R
+            2707, 0x341F760, R
+            2709, 0xFF113360, R
+            2710, 0x3348900, W
+            2708, 0xFF0A7C20, R
+            2707, 0x1C1F760, W
+            2709, 0x31FE308, R
+            2710, 0xFF4A30E0, R
+            2708, 0x30A7C28, R
+            2707, 0xFF41F840, R
+            2709, 0xFE113380, R
+            2710, 0x300FF05, R
+            2708, 0xFF0A7C28, R
+            2707, 0x341F860, R
+            2709, 0xFF1FE2F0, R
+            2710, 0x149E120, R
+            2708, 0x30AFF38, R
+            2707, 0xFFC6F840, W
+            2709, 0x31133A0, R
+            2710, 0xFF4C25F8, R
+            2708, 0xFE0A7B48, R
+            2707, 0x302FC60, W
+            2709, 0xFF1133C0, R
+            2710, 0x34C2600, R
+            2708, 0xFF0A7B48, R
+            2707, 0x141F880, R
+            2709, 0x322CCB0, R
+            2710, 0xFF05A5E0, W
+            2708, 0x3216F00, W
+            2707, 0xFF4952E0, R
+            2709, 0xFE1133E0, R
+            2710, 0x3E06600, W
+            2708, 0xFFAB3A90, R
+            2707, 0x3C9D2E0, W
+            2709, 0xFF113400, R
+            2710, 0x144E4F8, R
+            2708, 0x30A7B58, R
+            2707, 0xFF495F10, R
+            2709, 0x322CCC0, R
+            2710, 0xFF44E500, R
+            2708, 0xFE0A7B58, R
+            2707, 0x3CE5305, W
+            2709, 0xFF113420, R
+            2710, 0x344E520, R
+            2708, 0xFF0A7B60, R
+            2707, 0x14A3EC0, R
+            2709, 0x320A980, R
+            2710, 0xFF00FF10, R
+            2708, 0x3AB3AA0, R
+            2707, 0xFF41FDE0, R
+            2709, 0xFE20A968, R
+            2710, 0x36965A0, W
+            2708, 0xFF0AFF70, R
+            2707, 0x3BD7DE0, W
+            2709, 0xFF113440, R
+            2710, 0x144E5C0, R
+            2708, 0x30A7B68, R
+            2707, 0xFFE78900, R
+            2709, 0x3113460, R
+            2710, 0xFF44E5E0, R
+            2708, 0xFE0A7B68, R
+            2707, 0x34758A0, R
+            2709, 0xFF194730, R
+            2710, 0x344E621, R
+            2708, 0xFFAEF710, R
+            2707, 0x1C70400, W
+            2709, 0x3194740, R
+            2710, 0xFFDAE640, W
+            2708, 0x30A7B68, R
+            2707, 0xFFC706E0, W
+            2709, 0xFE194760, R
+            2710, 0x3414F20, R
+            2708, 0xFF06FF90, R
+            2707, 0x34006E0, R
+            2709, 0xFF194780, R
+            2710, 0x1F7CF20, W
+            2708, 0x30A7B70, R
+            2707, 0xFF19A8A0, W
+            2709, 0x320A858, R
+            2710, 0xFF4BCFC0, R
+            2708, 0xFE0A7B70, R
+            2707, 0x34A3EE0, R
+            2709, 0xFFFEA840, W
+            2710, 0x374CFC0, W
+            2708, 0xFF86CD90, R
+            2707, 0x14A3F00, R
+            2709, 0x31947A0, R
+            2710, 0xFF4696A0, R
+            2708, 0x30A7B78, R
+            2707, 0xFFB5BF00, W
+            2709, 0xFE20A868, R
+            2710, 0x3446460, R
+            2708, 0xFF0A7B80, R
+            2707, 0x34A3F20, R
+            2709, 0xFF1947C0, R
+            2710, 0x1F92120, W
+            2708, 0x3C2E058, W
+            2707, 0xFF4A3098, R
+            2709, 0x324C3C0, R
+            2710, 0xFF496EC0, R
+            2708, 0xFE0BFF90, R
+            2707, 0x34A74A0, R
+            2709, 0xFF1916E8, R
+            2710, 0x34A0C00, R
+            2708, 0xFF0A7B80, R
+            2707, 0x149E110, R
+            2709, 0x3191700, R
+            2710, 0xFF49D640, R
+            ^C##############################
+            Tempo de execucao do programa -> 121.888952
+            Numero de PageFaults -> 82
+            Numero de Swaps -> 24
+            ##############################
 
 
 Sobre o projeto:

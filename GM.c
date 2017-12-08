@@ -32,6 +32,9 @@ PageTable *PageTablep3;
 PageTable *PageTablep4;
 minHeap frameHeap;
 
+clock_t start, end;
+double cpu_time_used;
+
 typedef struct {
     PageFrame **pf;
     minHeap mh;
@@ -39,10 +42,12 @@ typedef struct {
 } args;
 
 args *thread_arg;
-int segP1, segP2, segP3, segP4, segPx, segPfault, segVet, segIdx;
+int segP1, segP2, segP3, segP4, segPx, segPfault, segVet, segIdx, segnPF, segnSW;
 int *Px, *vet;
 Idx *posicao;
+int *numPF, *numSwap;
 int main(int argc, char *argv[]) {
+    start = clock();
     int P1, P2, P3, P4;
     unsigned int i, o;
     unsigned int addr;
@@ -87,7 +92,15 @@ int main(int argc, char *argv[]) {
                     if ((segIdx = shmget(7777, sizeof(Idx), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
                         perror("shmget idx gm");
                         treat_ctrl_C(1);
-                    }                     
+                    }
+                    if ((segnPF = shmget(10, sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+                        perror("shmg idx gm");
+                        treat_ctrl_C(1);
+                    }
+                    if ((segnSW = shmget(20, sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+                        perror("shmg idx gm");
+                        treat_ctrl_C(1);
+                    }                                
                     
                     PageTablep1 = (PageTable *) shmat(segP1, 0, 0);
                     PageTablep2 = (PageTable *) shmat(segP2, 0, 0);
@@ -96,6 +109,8 @@ int main(int argc, char *argv[]) {
                     Px = (int *) shmat(segPx, 0, 0);
                     vet = (int *) shmat(segVet, 0, 0);
                     posicao = (Idx *) shmat(segIdx, 0, 0);
+                    numPF = (int *)shmat(segnPF, 0, 0);
+                    numSwap = (int *)shmat (segnSW, 0, 0);
                     mem_fisica = (PageFrame **) malloc(256*sizeof(PageFrame*));
                     thread_arg = (args *)malloc(sizeof(args));
                    // mem_fisica = (PageFrame *) malloc(256*sizeof(PageFrame));
@@ -109,6 +124,11 @@ int main(int argc, char *argv[]) {
                     posicao->index_VM = 0;
                     posicao->index_PF = 0;
                     shmdt(posicao);
+
+                    *numPF = 0;
+                    *numSwap = 0;
+                    shmdt(numPF);
+                    shmdt(numSwap);
 
                     while(k<256){//inicializa tudo
                         mem_fisica[k] = (PageFrame*)malloc(sizeof(PageFrame));
@@ -148,7 +168,8 @@ int main(int argc, char *argv[]) {
                     //Constroi Heap de minimos para os frames
                     frameHeap = initMinHeap();
                     buildMinHeap(&frameHeap,mem_fisica,256);
-                    
+                    shmdt(vet);
+                    shmdt(Px);
                     signal(SIGUSR1, pageFault);
                     signal(SIGINT, treat_ctrl_C);
                     //Lê, dos parâmetros dados, o delta que será utilizado para calcular a frequência de uso de um frame
@@ -282,7 +303,6 @@ void pageFault(int signal){
 
     i = posicao->index_PF;
     posicao->index_PF = add_pos(posicao->index_PF);
-    //printf("NO PF qual pfault usar: %d -------------- idx: %d\n", vet[i], i);
 
     requsitador_pid = pFault[vet[i]].pid;
     //carrega a pt do processo que enviou sigfault
@@ -298,7 +318,6 @@ void pageFault(int signal){
          printf("SIGUSR1 received by %d: Entered pageFault\n",memID);
     #endif
     segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR);
-    //printf("Programa requisatando pFault[vet[i]]: %d\n", memID);
     pt_requsitador = (PageTable *) shmat(segPT, 0, 0);
 
     if((pFault[vet[i]].frameNum == -1)&&(pFault[vet[i]].vazio)){
@@ -405,10 +424,26 @@ void pageFault(int signal){
 }
 void sleep1sec(int signal){
     //printf("\tProc %d dormirá 1 seg.\n",getpid());
+    int segnPF;
+    int *numPF;
+    if ((segnPF = shmget(10, sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+        perror("shmg idx gm");
+        treat_ctrl_C(1);
+    }
+    numPF = (int *)shmat(segnPF, 0, 0);
+    *numPF= *numPF + 1;
     sleep(1);
 }
 void sleep2sec(int signal){
-    //printf("\tProc %d dormirá 2 seg.\n",getpid());
+    //printf("\tProc %d dormirá 2 seg.\n",getpid
+    int segnSW;
+    int *numSwap;
+    if ((segnSW = shmget(20, sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+        perror("shmg idx gm");
+        treat_ctrl_C(1);
+    } 
+    numSwap = (int *)shmat (segnSW, 0, 0);
+    *numSwap = *numSwap + 1;
     sleep(2);
 }
 void *threadproc(void *arg){
@@ -448,5 +483,33 @@ void treat_ctrl_C(int signal){
     shmctl (segP3, IPC_RMID, 0);
     shmctl (segP4, IPC_RMID, 0);
     shmctl (segPx, IPC_RMID, 0);
+
+    if ((segnPF = shmget(10, sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+        perror("shmg idx gm");
+        treat_ctrl_C(1);
+    }
+    if ((segnSW = shmget(20, sizeof(int), IPC_CREAT | S_IWUSR | S_IRUSR)) == -1) {
+        perror("shmg idx gm");
+        treat_ctrl_C(1);
+    } 
+    numPF = (int *)shmat(segnPF, 0, 0);
+    numSwap = (int *)shmat (segnSW, 0, 0);
+
+    end = clock();
+    cpu_time_used = ((double) (end - start))/ CLOCKS_PER_SEC;
+    printf("##############################\n");
+    printf("Tempo de execucao do programa -> %lf\n", cpu_time_used);
+    printf("Numero de PageFaults -> %d\n", *numPF);
+    printf("Numero de Swaps -> %d\n", *numSwap);
+    printf("##############################\n");
+
+    shmdt(numPF);
+    shmdt(numSwap);
+
+    shmctl(segIdx, IPC_RMID, 0);
+    shmctl(segVet, IPC_RMID, 0);
+    shmctl(segnPF, IPC_RMID, 0);
+    shmctl(segnSW, IPC_RMID, 0);
+
     exit(0);
 }

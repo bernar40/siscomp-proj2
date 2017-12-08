@@ -61,7 +61,7 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 
     i = posicao->index_VM;
     posicao->index_VM = add_pos(posicao->index_VM);
-
+    shmdt(posicao);
     if (program_pid == Px[0]){
         memID = 1111;
         vet[i] = 0;
@@ -78,13 +78,11 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
         memID = 4444;
         vet[i] = 3;
     }
-    //printf("Qual pfault usar: %d -------------- idx: %d\n", vet[i], i);
 
     if ((segPT = shmget(memID, 256*sizeof(PageTable), IPC_CREAT | S_IRUSR | S_IWUSR)) == -1) {
 		perror("shmget segPT trans");
 		exit(1);
 	}
-    //printf("Programa no trans: %d\n", memID);
 
     pt = (PageTable *) shmat(segPT, 0, 0);
     
@@ -106,8 +104,8 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 		pFault[vet[i]].frameNum = -1;
 		pFault[vet[i]].rw = rw;
 		pFault[vet[i]].vazio = 1;
-		//printf("Pus tudo no Pfault[%d]\n", vet[i]);
 	}
+	shmdt(vet);
 	/*Irá chamar o GM, independente se deu pageFault ou n
 	o GM precisa atualizar o contador do frame e mudar o bit b_written se for "w"*/
 	//printf("%d mandando SIGUSR1 para o GM\n", memID);
@@ -122,9 +120,6 @@ void trans(int program_pid, unsigned int page_index, unsigned int offset, char r
 	printf("%d, 0x%X, %c\n",getpid(),physicaladdr,rw);
     
     shmdt (pt);
-    //shmctl (segPT, IPC_RMID, 0);
     shmdt (Px);
-    //shmctl (segPx, IPC_RMID, 0);
     shmdt (pFault);
-    //shmctl (segPfault, IPC_RMID, 0);
 }
