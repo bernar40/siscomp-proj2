@@ -2,14 +2,6 @@
 RELATÓRIO por BERNARDO COSTA RUGA 1511651 e RODRIGO LEITE DA SILVA 1413150
 ##################################################
 
-Um resumo do projeto: alguns parágrafos que descrevam a estrutura geral do seu
-simulador e as estruturas de dados relevantes (para implementação de cada algoritmo de substituição).
-
-
-
-Voce deve analisar (e comparar) a eficiência das susbstituições de paginas para três variantes do algoritmo LFU com três de comprimentos de períodos de tempo: por exemplo: acessos nos últimos 30 ms, nos últimos 90 ms, e nos 120 ms. E as três métricas de desempenho serão: duração da execuçãoo da simulação, numero de ocorrências de Page-faults e numero de ocorrências de escrita (simulada) de uma página modificada em um frame para a área de swap.
-
-
 Segundo Trabalho de Sistemas de Computação – INF 1019
 
 Arquivos: GM.c
@@ -27,6 +19,7 @@ Compilação:	gcc -pthread GM.c VM.c minHeap.c -o GM
 
 Execução:	./GM <tempo>
                     Obs: Quando não posto, automaticamente assume como 30
+                    OBS: Para ver o número de swaps e pagefaults, terminar o programa com ctrl-c.
 
 Testes GM:
 
@@ -150,7 +143,7 @@ Testes GM:
             Numero de PageFaults -> 78
             Numero de Swaps -> 22
             ##############################
-    Tempo 60:
+    Tempo 90:
             2692, 0xFF41F7A0, R
             2691, 0xFFB243A0, R
             2690, 0xFF0A7C20, R
@@ -269,8 +262,8 @@ Testes GM:
             2689, 0xFF4A74A0, R
             ^C##############################
             Tempo de execucao do programa -> 120.279129
-            Numero de PageFaults -> 77
-            Numero de Swaps -> 25
+            Numero de PageFaults -> 73
+            Numero de Swaps -> 28
             ##############################
 
 
@@ -400,8 +393,8 @@ Testes GM:
             2710, 0xFF49D640, R
             ^C##############################
             Tempo de execucao do programa -> 121.888952
-            Numero de PageFaults -> 82
-            Numero de Swaps -> 24
+            Numero de PageFaults -> 70
+            Numero de Swaps -> 30
             ##############################
 
 
@@ -412,11 +405,18 @@ Sobre o projeto:
 
     O jeito que o programa funciona é o seguinte, ele primeiro  se divide em 5, sendo 4 filhos e 1 GM, e aloca uma mémoria compartilhada para cada tabela de páginas pertencente a cada filho. Após isso, ele grava o pid de cada filho em um array compartilhado, que servirá como guia para qual pagetable acessar no futuro. Depois, criamos o heap, tratamos alguns sinais, definimos qual o tempo escolhido pelo usuário, definimos os valores do thread e o começamos. Após isso o GM entra em um loop infinito. Enquanto isso, cada filho vai lendo uma linha de seu respectivo arquivo e calculando o index e o offset de cada endereço virtual, sendo 8 bits o index e 24 bits o offset. Cada programa então chama a função "trans" que tem como objetivo traduzir o endereço logíco recebido em um endereço físico. 
 
-    A função "trans()" é bem simples, ela começa vendo qual filho a está chamando comparando seu pid com o do vetor de pids criado recentemente. Isto lhe dara um código que sera o ID de cada page table. Após isso ele vai abrir a tabela de páginas conrrespondente e um indice ta tabela secundário para auxiliar na implementação, o pagetablefault, que é possui uma unica estrutura igual a tabela de páginas. Como no começo do código "resetamos" nossas váriaveis, na função trans() ele vai chegar se os parametros forem iguais ao resetados é pq a pagina precisa ir para pagefault, preenchemos o pagetablefault com informações pertinentes, chamos o SIGUSR1 que iniciará o processo de page fault e damos um SIGSTOP para que pare de exectuar até que já tenha ocorrido o pagefault. Após o processo retornar do pagefault, ele terá seu frame number, que se converterá em endereço físico junto ao offset e então o mesmo será printado na tela.
+    A função "trans()" é bem simples, ela começa vendo qual filho a está chamando comparando seu pid com o do vetor de pids criado recentemente. Isto lhe dara um código que sera o ID de cada page table. Após isso ele vai abrir a tabela de páginas conrrespondente, um indice ta tabela secundário para auxiliar na implementação, o pFault, que é possui quatros estruturas iguais à tabela de páginas, também um vetor que servira como uma fila para dizer qual pFault acessar, dependendo de qual for o processo chamando a trans e por fim uma estrutura de indice, que servirá para dizer em qual indice do vetor estara armazenado qual programa está acessando a trans. Por exemplo, se P4 rodar pela primeira vez o trans, index_VM será 0, e vet[0] será 3, pois ele usará o pFault[3]. Apos gravar o vet[index], ele somara 1 ao índice e assim o próximo que chamar trans, pegará o indice seguinte e assim por diant. Esse vetor é circular, então quando ele terminar, o indice voltará para 0. Como no começo do código "resetamos" nossas váriaveis, na função trans() ele vai chegar se os parametros forem iguais ao resetados é pq a pagina precisa ir para pagefault, preenchemos o pFault com informações pertinentes, chamos o SIGUSR1 que iniciará o processo de page fault e damos um SIGSTOP para que pare de exectuar até que já tenha ocorrido o pagefault. Após o processo retornar do pagefault, ele terá seu frame number, que se converterá em endereço físico junto ao offset e então o mesmo será printado na tela.
 
-    Por fim o "pagefault" funciona da seguinte maneira, deleteNode(&frameHeap) pega o nó de menor "value" do heap, ou seja, o Least Frequently Used, e o armazena em min. Em seguida ele carrega a pagetablefault para descobrir qual o pip do pragrama que requisitou o pagefault, após isso, usando a mesma técnica do trans, pegamos o ID correspondente à tabela de páginas do processo. Verificamos então se a página possui ou não frame number, se não é um caso de pagefault então ele muda o bit de written e soma 1 ao contador de acessos do frame que contém a página acessada. Em seguida devolve min ao Heap sem modificá-lo e chama heapify para garantir a integridade do Heap. Caso haja pageFault, havalia min: se min estava preenchido, põe o pid do processo dono da página como perdedor e, se o bit b_written for verdadeiro, ocorre a simulação do swap, onde o processo que gerou o page fault recebe um SIGCONT e um SIGUSR2 para dormir por dois segundo; como uma página foi retirada do frame, altera-se a page table do processo perdedor para refletir essa perda. Se o frame estava vazio, não há necessidade de fazer o requisitador dormir, então envia-se um SIGCONT. min, então, receberá a página que gerou o page fault. A tabela de paginas do requisitador é enfim alterada, devolve min ao Heap, chama heapify para garantir a integridade do Heap e o pagefault acaba.
+    Por fim o "pagefault" funciona da seguinte maneira, deleteNode(&frameHeap) pega o nó de menor "value" do heap, ou seja, o Least Frequently Used, e o armazena em min. Em seguida ele carrega o o vetor do trans e o index_PF, e então o index_PF só aumentará quando o pFault saber qual será acessado, 0, 1, 2 ou 3, após isso index_PF será somado e o próximo programa que der pagefault usará o próximo index_PF. Então usaremos o pFault[vet[index_PF]] para descobrir qual o pip do pragrama que requisitou o pagefault, após isso, usando a mesma técnica do trans, pegamos o ID correspondente à tabela de páginas do processo. Verificamos então se a página possui ou não frame number, se não é um caso de pagefault então ele muda o bit de written e soma 1 ao contador de acessos do frame que contém a página acessada. Em seguida devolve min ao Heap sem modificá-lo e chama heapify para garantir a integridade do Heap. Caso haja pageFault, havalia min: se min estava preenchido, põe o pid do processo dono da página como perdedor e, se o bit b_written for verdadeiro, ocorre a simulação do swap, onde o processo que gerou o page fault recebe um SIGCONT e um SIGUSR2 para dormir por dois segundo; como uma página foi retirada do frame, altera-se a page table do processo perdedor para refletir essa perda. Se o frame estava vazio, não há necessidade de fazer o requisitador dormir, então envia-se um SIGCONT. min, então, receberá a página que gerou o page fault. A tabela de paginas do requisitador é enfim alterada, devolve min ao Heap, chama heapify para garantir a integridade do Heap e o pagefault acaba.
 
 Análise:
 
-    O algoritmo do pagefault aparenta estar funcionando, porém acontece um imprevisto, esperavamos que a CPU fosse empilhar as chamadas de sinais e ir executando elas em fila. Por exemplo, se o P4 chamasse SIGUSR1 primeiro, e P2 depois, primeiro executaria o do P4 e apos isso o do P2. Só que isso não acontece. Os sinais são substituidos, o de P2 substitui o do P4 e o do P4 entra em SIGSTP e não sai mais, pois como não executa seu pagefault, não recebe o SIGCONT. Porém, tendo em mente o do P2, que parece funcionar conseguimos ver essas funcionalidades. Com 30 ms, temos que o programa funciona de maneira default, as primeiras páginas são empilhadas na tabela de frame, e com 30ms temos um número razoavel para checar qual página está sendo chamada mais frequentemente, porém como é o menor dos tempos pedidos (30, 60 e 120), ele acaba as vezes substituindo páginas que poderiam vir a ser mais usadas no futuro, so que isso é meio relativo com o que o computador quer, quanto maior o tempo, mais certeza se terá que uma pagina está sendo mais usada, e junto a isso terá mais tempo para "editar" uma página, sendo assim o número de swaps deveria se maior com o aumento do tempo, pois a pagina ficará mais tempo na memória e o algoritmo terá mais tempo de ler outro endereço da página que estara modificando a mesma. Sendo assim, quando menor o tempo, menor o número de swaps, porém maior o número de pagefaults. 
+    O algoritmo funciona de forma quase perfeita. Os programas conseguem concorrentemente executar seus pagefaults, e imprimir seus endereços fisicos. Eles conseguem por qual vai executar em um vetor e o pagefault vai lendo esse vetor conforme é chamado, como se fosse uma fila de sinais, que vai empilhando e o pagefault vai lendo. O que não conseguimos implementar foi o algoritmo de semaforos dentro do código. Ele não trata o caso de que se uma página é removida enquanto outro vê que sua página está lá e pretende modifica-la. Analisando agora a diferença de tempo, quando o programa está executando o algoritmo de LFU com 30ms, vemos que no breve intervalo de tempo que rodamos o código (acima) ele foi o que teve mais pagefault e o que menos teve swap. Com 30ms o pc tem uma quantidade de tempo razoável para checar qual página está sendo chamada mais frequentemente, porém como é o menor dos tempos (30 ,90 ,120), ele acaba ainda assim removendo algumas paginas que podem ser chamadas mais no futuro. A maior remoção de paginas causa um maior número de pagefaults, pois as páginas são removidas com mais frequencia, e devido a isso o número de swaps é menor, pois a menos tempo da página ficar na memória e ser modificada. Já com 90ms, temos um tempo maior de reteção de página na memória, sendo assim menos pagefaults e mais swaps, pois há mais tempo de vir algum endereço que modifique a página. O pouco que executamos o programa, já vemos que esse número de fato acontece, ele tem menos pagefaults e mais swaps. Com 120ms é onde vemos o ápice, é quando deveriam haver mais swaps ainda, pois as páginas duram mais tempo na memória. Conseguimos ver que dentre todos os outros tempos, com 120ms o programa tem mais swaps que 90ms e 30ms e menos pagefault que os dois também. 
+
+#######################################################################
+O que foi adicionado nessa versão final:
+      O sinal de pagefault é tratado como se estivesse numa fila de sinais. Ele vai executando os pagefaults que vão empilhando.
+      prints optimizados, apenas os prints necessários estão aparecendo na tela.
+
+
 
